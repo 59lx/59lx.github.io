@@ -36,7 +36,7 @@
 <p>继续到博客页面，控制台改变域名和之前相同，然后进行 cookie 访问：</p>
 <p><img src="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/jsonp/3.png" alt="3.png"></p>
 <p>这种方法只适用于 Cookie 和 iframe 的窗口，LocalStorage 和 IndexDB 不能使用此方法。</p>
-<p>一般浏览器前端设置 cookie 的插件，像 EditThisCookie 这种，还是后端设置 cookie，如果没有特殊的用处，都是将 cookie 的 domain 字段设置为当下所属的域，所以这一点可能利用起来条件比较苛刻。</p>
+<p>一般浏览器前端设置 cookie 的插件，像 EditThisCookie 这种，还是后端设置 cookie，如果没有特殊的用处，都是将 cookie 的 domain 字段设置为当下所属的域，但是如果此域存在一个 xss, 组合利用的话，可以修改 cookie 让另一个子域跨域访问到。</p>
 <p>下面再给出一个比较有意思的跨域获取 cookie 的思路：</p>
 <ul>
 <li>现在在 cms1.test.ink 域下面有一个 1.html,内嵌一个 cms2.test.ink 的 2.html 页面:</li>
