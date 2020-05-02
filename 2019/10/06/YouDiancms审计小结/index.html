@@ -72,7 +72,7 @@
 <p>由于本机未装 php 5.6 以下版本，所以本次测试环境为 :</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">os : win10</span><br><span class="line">php_version : 5.4.45</span><br></pre></td></tr></table></figure>
 
-<p>5.4 版本以上 php 都默认会禁止加载外部实体，所以复现条件比较苛刻。</p>
+<p>网上很多文章都有写 libxml 2.9.1 以上的 php 默认会禁止加载外部实体，实际上 libxml 2.9.4 这一版的 php 依旧可以成功加载外部实体。因为 php 7.0 以上的版本集成的 libxml 还是有 2.9.4 版，所以此漏洞也是可以在 php7 上复现的，这个问题由 Cart0a 提出。具体禁用加载外部实体的 libxml 版本有待探索。</p>
 <p>由于是无回显形式的 xxe，所以我们需要构造一个数据接收方：</p>
 <ul>
 <li>我们先在本地上传模拟测试实体 <code>test.dtd</code></li>
