@@ -21,11 +21,11 @@
 body {
   margin: 0;
   font-size: 14px;
-  color: #33333d link;
+  color: #33333d;
   font-family: 'Hiragino Sans GB', 'Hiragino Sans GB W3', 'Microsoft YaHei', 'WenQuanYi Micro Hei', sans-serif;
 }
 body a {
-  color: #33333d link;
+  color: #33333d;
   text-decoration: none;
 }
 body a:hover {
@@ -687,7 +687,7 @@ body p {
   line-height: 45px;
   text-align: center;
   border-radius: 50%;
-  background-color: #33333d link;
+  background-color: #33333d;
   color: #fff;
   transition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);
   box-shadow: 0 1px 2px 0 rgba(60,64,67,0.302), 0 1px 3px 1px rgba(60,64,67,0.149);
@@ -697,7 +697,7 @@ body p {
 }
 .fab:hover {
   background-color: #20b2aa;
-  color: #33333d link;
+  color: #33333d;
   cursor: pointer;
 }
 .fab-hide {
@@ -742,7 +742,7 @@ body p {
 }
 .paginator span,
 .paginator a:hover {
-  background-color: #33333d link;
+  background-color: #33333d;
   color: #fff;
 }
 @-moz-keyframes move-forever {
@@ -987,42 +987,42 @@ body p {
   font-size: 1.5em;
   margin-bottom: 1em;
   margin-top: 2em;
-  color: #33333d link;
+  color: #33333d;
   font-weight: bold;
 }
 .article .main .content h2 {
   font-size: 1.4em;
   margin-bottom: 1em;
   margin-top: 2em;
-  color: #33333d link;
+  color: #33333d;
   font-weight: bold;
 }
 .article .main .content h3 {
   font-size: 1.3em;
   margin-bottom: 1em;
   margin-top: 2em;
-  color: #33333d link;
+  color: #33333d;
   font-weight: bold;
 }
 .article .main .content h4 {
   font-size: 1.2em;
   margin-bottom: 1em;
   margin-top: 2em;
-  color: #33333d link;
+  color: #33333d;
   font-weight: bold;
 }
 .article .main .content h5 {
   font-size: 1.1em;
   margin-bottom: 1em;
   margin-top: 2em;
-  color: #33333d link;
+  color: #33333d;
   font-weight: bold;
 }
 .article .main .content h6 {
   font-size: 1em;
   margin-bottom: 1em;
   margin-top: 2em;
-  color: #33333d link;
+  color: #33333d;
   font-weight: bold;
 }
 .article .main .content p code {
@@ -1039,7 +1039,7 @@ body p {
   padding: 0.2em 0.4em;
   font-size: 87.5%;
   color: #fff;
-  background-color: #33333d link;
+  background-color: #33333d;
   border-radius: 0.2em;
 }
 .article .main .content table {
@@ -1050,12 +1050,12 @@ body p {
 .article .main .content table,
 .article .main .content table td,
 .article .main .content table th {
-  border: 1px solid #33333d link;
+  border: 1px solid #33333d;
   border-collapse: collapse;
   padding: 5px;
 }
 .article .main .content figure {
-  color: #33333d link;
+  color: #33333d;
   margin: 0;
   overflow: auto;
   margin-bottom: 20px;
