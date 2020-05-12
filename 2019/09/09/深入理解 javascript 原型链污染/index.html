@@ -110,7 +110,7 @@
       <span class="post-info-item"><i class="iconfont iconcalendar"></i>2019-09-09</span
         class="post-info-item">
       
-      <span class="post-info-item"><i class="iconfont iconfont-size"></i>15998</span>
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>15820</span>
     </div>
   </div>
 </section>
@@ -134,9 +134,6 @@
 <p>我们一般理解的是对象直接由类构造而来，而且构造函数是在类里面的一个方法。但是 Js 却恰恰相反，它的构造函数在外面，而真正的类被包含在构造函数里面，属于构造函数的一个属性 <strong>prototype</strong>,所以刚开始的时候用 Js 的对象和原型的时候会感觉到特别的蹩脚。</p>
 <p>我们可以这样来理解，以上面的例子为主，我们现在有一个对象 person ，它的类就是构造函数中的 Person.prototype, 而这个类的构造函数就是 Person()，其中：</p>
 <p><code>Person.prototype 和 person.__proto__</code> 指向的都是普通意义上 person 对象的类。用之前的面向对象思维理解 Js 的继承机制，可能会是个好办法，如果不喜欢这种办法，就按你舒服的方法来理解。</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs undefined"><span class="hljs-selector-tag">timeline</span> : 2020<span class="hljs-selector-class">.1</span><span class="hljs-selector-class">.21</span><br>上面这段话说的可能稍微有些问题，<span class="hljs-selector-tag">Person</span><span class="hljs-selector-class">.prototype</span> 指的是这个构造函数在 <span class="hljs-selector-tag">new</span> 之前的原型类，<span class="hljs-selector-tag">new</span> 之后的所有对象 <span class="hljs-selector-tag">person</span><span class="hljs-selector-class">.__proto__</span> 都是由 <span class="hljs-selector-tag">Person</span><span class="hljs-selector-class">.prototype</span> 派生出来的，具体例子见下图 (__<span class="hljs-selector-tag">proto__</span> 是从 <span class="hljs-selector-tag">prototype</span> 拿到的不同的副本)<br></code></pre></td></tr></table></figure>
-
-<p> <img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/prototype/16.png"  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="    alt></p>
 <h2 id="2-1-constructor"><a href="#2-1-constructor" class="headerlink" title="2.1 constructor"></a>2.1 constructor</h2><p>这里再提一个小点，我们在其他前端开发的代码中经常会看见类似下面的代码：</p>
 <figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs undefined">Student.prototype<span class="hljs-function">.<span class="hljs-keyword">constructor</span> = <span class="hljs-title">Student</span>;</span><br></code></pre></td></tr></table></figure>
 
