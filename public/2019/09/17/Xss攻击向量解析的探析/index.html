@@ -1,0 +1,345 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Xss 攻击向量解析的探析 - 你好我是王日天@</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="google" content="notranslate">
+  
+  <meta name="keywords" content="zhaoo,"> 
+  
+  <meta name="description" content="record_of_mylife,1@ 前言当利用编码来绕过有关 xss 的 waf 的..."> 
+  
+  <meta name="author" content="rt95"> 
+  <link rel="shortcut icon" href="/image/favicon.png">
+  <link rel="stylesheet" href="/css/style.css">
+
+  
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1445822_58xq2j9v1id.css">
+  
+
+  
+  
+  <link rel="stylesheet" href="https://cdn.bootcss.com/fancybox/3.5.7/jquery.fancybox.min.css">
+  
+
+  
+  
+  <link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/solarized-light.min.css">
+  
+
+  
+  
+  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/justifiedGallery/3.7.0/css/justifiedGallery.min.css">
+  
+
+  <script>
+    var CONFIG = window.CONFIG || {}
+    CONFIG = {
+      fancybox: true,
+      pjax: false,
+      lazyload: true,
+      donate_alipay: '/image/95.jpg',
+      donate_wechat: '/image/95.jpg',
+      gitalk: {
+        enable: false,
+        clientID: '',
+        clientSecret: '',
+        id: window.location.pathname,
+        repo: '',
+        owner: '',
+        admin: ''
+      },
+      motto: {
+        api: '',
+        default: ''
+      },
+      galleries: {
+        enable: 'true'
+      }
+    }
+  </script>
+
+  
+
+</head></html>
+<body class="lock-screen">
+  <div class="loading"></div>
+  <nav class="menu">
+  <div class="menu-close">
+    <i class="iconfont iconplus"></i>
+  </div>
+  <ul class="menu-content">
+    
+    
+    
+    
+    <li class="menu-item"><a href="/ "> 首页</a></li>
+    
+    
+    
+    
+    <li class="menu-item"><a href="/archives "> 归档</a></li>
+    
+    
+    
+    
+    <li class="menu-item"><a href="/links "> links</a></li>
+    
+    
+    
+    
+    <li class="menu-item"><a href="/about "> 关于</a></li>
+    
+  </ul>
+  <div class="menu-copyright"><p>Copyright© 2019-2020 | <a target="_blank" href="https://www.izhaoo.com">zhaoo</a> .AllRightsReserved</p></div>
+</nav>
+  <main id="main">
+  <div class="container" id="container">
+    <article class="article">
+  <section class="head">
+  <img      class="lazyload" data-original="/image/post-image.jpg"  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="     draggable="false">
+  <div class="head-mask">
+    <h1 class="head-title">Xss 攻击向量解析的探析</h1>
+    <div class="head-info">
+      <span class="post-info-item"><i class="iconfont iconcalendar"></i>2019-09-17</span
+        class="post-info-item">
+      
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>7895</span>
+    </div>
+  </div>
+</section>
+  <section class="main">
+    <section class="content">
+      <h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1@ 前言"></a>1@ 前言</h1><p>当利用编码来绕过有关 xss 的 waf 的时候，有时我们构造的 payload 得不到执行。纵然你的编码方式是对的，但是如果对应的解析器不解析你的攻击向量，也是徒劳的。这时候我们就需要比较清晰的了解自己的 payload 所遵守的解析策略与经历的解析流程，然后构造出更加有针对性的攻击向量。</p>
+<h1 id="2-基础铺垫"><a href="#2-基础铺垫" class="headerlink" title="2@ 基础铺垫"></a>2@ 基础铺垫</h1><p>在了解一个 payload 解析流程之前，我们需要先熟悉一些用到的基础知识。</p>
+<h2 id="2-1-HTML字符实体"><a href="#2-1-HTML字符实体" class="headerlink" title="2.1 HTML字符实体"></a>2.1 HTML字符实体</h2><p>在 HTML 中，字符实体其实就是转义序列，一般是为了正确显示保留，如 <strong>‘&lt;’</strong>, <strong>‘&gt;’</strong>, <strong>空格</strong>等。HTML 中的实体转义格式有以下两种：</p>
+<h3 id="Entity-name-（实体名称）"><a href="#Entity-name-（实体名称）" class="headerlink" title="Entity name （实体名称）"></a>Entity name （实体名称）</h3><p>格式 ： <strong>&amp;实体名;</strong></p>
+<p>eg ： <code>&amp;lt;</code> （less than）表示 ‘&lt;’</p>
+<p><a href="http://www.w3school.com.cn/html/html_entities.asp" target="_blank" rel="noopener">更多的字符实体名戳这里</a></p>
+<h3 id="Entity-Number-实体编号"><a href="#Entity-Number-实体编号" class="headerlink" title="Entity Number (实体编号)"></a>Entity Number (实体编号)</h3><p>格式 ： <strong>&amp;实体编号;</strong></p>
+<p>其中实体编号可以 是 16 进制格式 <strong>&amp;#x</strong> 开头，或者 10 进制格式的 <strong>&amp;#</strong> 开头。</p>
+<p>eg ： <code>&amp;#65;</code> 表示字符 ‘A’ </p>
+<h2 id="2、-JS-中的-unicode-表示"><a href="#2、-JS-中的-unicode-表示" class="headerlink" title="2、 JS 中的 unicode 表示"></a>2、 JS 中的 unicode 表示</h2><p>格式 ：<strong>\u + 16 进制的 unicode 编码</strong></p>
+<p>eg : <code>\u5b89</code> 表示汉字 <strong>安</strong></p>
+<h1 id="3-攻击向量经历的三种解析"><a href="#3-攻击向量经历的三种解析" class="headerlink" title="3@ 攻击向量经历的三种解析"></a>3@ 攻击向量经历的三种解析</h1><h2 id="1、HTML-解析"><a href="#1、HTML-解析" class="headerlink" title="1、HTML 解析"></a>1、HTML 解析</h2><p>原版的 HTML 解析规则<a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/tokenization.html" target="_blank" rel="noopener">戳这</a>。</p>
+<p>eg : <code>&lt;a href=&quot;http://www.baidu.com&quot;&gt;text&lt;/a&gt;</code></p>
+<p>联想一下我们学过的数电，可以视 HTML 解析器为一个状态机，遍历获得的字符，按照规则进行状态的转换。以上面的例子：</p>
+<p>当碰到 <strong>&lt;</strong> 字符的时候，就会转换到标签开始状态 (Tag open state)【前提是紧跟字符不为 <strong>/</strong>】</p>
+<p>然后跳转到 标签名状态（Tag name state) 【对应例子里面的 a 】</p>
+<p>. . . . . .</p>
+<p>进入数据状态 (Data state) 【对应例子里面的 <strong>text</strong> 】, 在刚进入这个状态时，释放当前标签的 token 【对应例子里面的 a 标签的前部分】。在数据状态时，每发现一个完整的标签，就会释放一个 token.</p>
+<p>那么，是否存在这样一个位置状态，它可以将我们的字符实体解析并赋予本来的非字符的特殊意义(如 <code>&amp;lt;</code>表示 <strong>&lt;</strong>可以当标签开始符来对待，然后让其中的脚本执行)? 答案是：没有。这就与 HTML 解析 规则有关。我们再拿一个例子来讲：</p>
+<p><code>&lt;div&gt;&amp;lt;script&gt;alert(1);&lt;/script&gt;&lt;/div&gt;</code></p>
+<p>因为 div 标签开始后，解析器还是在数据状态，不会将这个字符引用转换为 ‘标签开始状态’，所以就可以保证我们得到的字符实体引用只会被解析为单纯的数据，而没有特殊意义，从而从一定程度上杜绝了一些风险。 <img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/xss_payload_new/xss_1.png"  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="    alt="xss_1"></p>
+<p>从图中我们可以看出来，’&lt;’ 标签已经被转义，但是只是作为纯字符输出在页面中。之后的 由于未配对成功而被解析器去除。</p>
+<p>而在 HTML 中也并不是所有位置都会解析转义字符引用，有三种情况下会转义：</p>
+<h3 id="数据状态的解析"><a href="#数据状态的解析" class="headerlink" title="数据状态的解析"></a>数据状态的解析</h3><p><code>&lt;div&gt;&amp;lt;&amp;gt;&lt;/div&gt;</code></p>
+<p><img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/xss_payload_new/xss_2.png"  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="    alt="xss_2"></p>
+<p>可以看到字符引用被解析。</p>
+<h3 id="属性值中的解析"><a href="#属性值中的解析" class="headerlink" title="属性值中的解析"></a>属性值中的解析</h3><p><code>&lt;a href=&quot;javascript:alert&amp;#40;1)&quot;&gt;&lt;/a&gt;</code></p>
+<p><img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/xss_payload_new/xss_3.png"  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="    alt="xss_3"></p>
+<p>可以看到 ‘(‘ 被解码。</p>
+<h3 id="RCDATA状态下的字符引用"><a href="#RCDATA状态下的字符引用" class="headerlink" title="RCDATA状态下的字符引用"></a>RCDATA状态下的字符引用</h3><p>这时我们需要先了解下 HTML 中的 5 类元素</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs undefined"><span class="hljs-number">1.</span>  空元素(Void elements)，如&lt;area&gt;,&lt;br&gt;,&lt;base&gt;等等<br><br><span class="hljs-number">2.</span>  原始文本元素(Raw text elements)，有&lt;script&gt;和&lt;style&gt;<br><br><span class="hljs-number">3.</span>  RCDATA元素(RCDATA elements)，有&lt;textarea&gt;和&lt;title&gt;<br><br><span class="hljs-number">4.</span>  外部元素(Foreign elements)，例如MathML命名空间或者SVG命名空间的元素<br><br><span class="hljs-number">5.</span>  基本元素(Normal elements)，即除了以上<span class="hljs-number">4</span>种元素以外的元素<br><br>五类元素的区别如下：<br><br><span class="hljs-number">1.</span>  空元素，不能容纳任何内容（因为它们没有闭合标签，没有内容能够放在开始标签和闭合标签中间）。<br><br><span class="hljs-number">2.</span>  原始文本元素，可以容纳文本。<br><br><span class="hljs-number">3.</span>  RCDATA元素，可以容纳文本和字符引用。<br><br><span class="hljs-number">4.</span>  外部元素，可以容纳文本、字符引用、CDATA段、其他元素和注释<br><br><span class="hljs-number">5.</span>  基本元素，可以容纳文本、字符引用、其他元素和注释<br></code></pre></td></tr></table></figure>
+
+
+
+<p>由于 RCDATA 状态中可以转义字符实体，那么在像 <strong>textarea</strong> <strong>title</strong> 等标签中就可以字符引用。这里 还有一个特殊的点就是在 <strong>RCDATA</strong> 元素标签 的内容中，遇到 <code>&lt;</code> 后，会进入 <strong>RCADATA小于号状态</strong>，如果紧接着不是<code>/</code>字符的话，就会返回到 <strong>RCDATA状态</strong>。那么也就是说在 <strong>textarea</strong>或者<strong>title</strong>标签中只能认识并解析的标签只有对应的 <strong></strong>或者 <strong></strong>,不会有新标签的产生，也就杜绝了脚本的执行。例如：</p>
+<p><code>&lt;textarea&gt;&lt;script&gt;alert(6)&lt;/script&gt;&lt;/textarea&gt;</code></p>
+<p>是不会执行的。</p>
+<h2 id="2、URL-解析"><a href="#2、URL-解析" class="headerlink" title="2、URL 解析"></a>2、URL 解析</h2><p>同样的，URL 解析器依旧可以看做一个状态机，其解析规则在<a href="http://url.spec.whatwg.org/" target="_blank" rel="noopener">这里</a>。这里只提几个 xss_payload 能涉及到的地方。</p>
+<p>1、首先，资源类型必须是大写字母或者小写字母，否则会进入到无状态类型。那首先就要求资源的协议要保证格式完全的正确,譬如使用 <strong>javascript:</strong> 伪协议时不能使用编码来绕过，因为这会让 URL 解析器跳转到 ‘ 无类型 ’状态，导致资源不能正确解析，我们构造的 payload 也就不能得到正确的执行，我们来看看下面的例子：</p>
+<p><code>&lt;a href=&quot;%6a%61%76%61%73%63%72%69%70%74:alert(1)&quot;&gt;text&lt;/a&gt;</code> 编码了 <strong>javascript</strong>，可以看到无法正确执行。</p>
+<p><img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/xss_payload_new/xss_4.png"  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="    alt="xss_4"></p>
+<p>从图中可以看出，得到的跳转地址是 <strong><a href="http://localhost/javascript:alert(1)" target="_blank" rel="noopener">http://localhost/javascript:alert(1)</a></strong>，原因就是没有正确的识别资源的协议类型，拼接到了默认地址的后面，导致 payload 无法执行。</p>
+<p>2、其次，URL 编码过程使用的是 UTF-8 编码，如果给 URL 进行别种方式的编码，会导致 URL 解析器不能正确识别。</p>
+<h3 id="HTML-中的两种-URL资源的执行"><a href="#HTML-中的两种-URL资源的执行" class="headerlink" title="HTML 中的两种 URL资源的执行"></a>HTML 中的两种 URL资源的执行</h3><p>我们可以利用伪协议来进行 xss 的反射攻击，而在HTML 标签中有两种 url 的连接类型，一种是 <code>src</code>，一种是 <code>href</code>，我们先来看看两者的区别</p>
+<h4 id="1、src"><a href="#1、src" class="headerlink" title="1、src"></a>1、src</h4><p>src 适用于替换当前元素，是 source 的缩写，指向外部资源的位置，指向的内容会 <strong>自动的</strong> 嵌入到文档中标签的位置。请求 src 资源的时候会将其指向的资源下载并应用到文档内。例如 js 脚本，img 图片，frame 元素等。</p>
+<h4 id="2、href"><a href="#2、href" class="headerlink" title="2、href"></a>2、href</h4><p>href 是 Hypertext Reference 的缩写，指向网络资源的所在位置，是与该页面有关联的，是引用。</p>
+<p><strong>src</strong>与 <strong>href</strong> 的主要区别就是 一个是引入，一个是引用。</p>
+<p>之前在很多地方看到 payload 都有这种 src 引用的格式</p>
+<p><code>&lt;img src=&quot;javascript:alert(0);&quot;&gt;</code></p>
+<p>但是现在在 Chrome 与 Firefox 上实验了下都不能执行。原因就是当下的一部分浏览器<strong>为了防止恶意代码的注入，已经禁用了 src 属性的 javascript 的伪协议</strong>。我们还有一种引入外部 js 文件的 src 利用方式：</p>
+<p><code>&lt;script src=&quot;evil.js&quot;&gt;&lt;/script&gt;</code></p>
+<p>其中 evil.js 中的内容为</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs undefined">alert(<span class="hljs-name">/xss/</span>)<span class="hljs-comment">;</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="3、-Javascript-解析"><a href="#3、-Javascript-解析" class="headerlink" title="3、 Javascript 解析"></a>3、 Javascript 解析</h2><p>详见 javascript 的<a href="http://www.ecma-international.org/publications/standards/Ecma-262.htm" target="_blank" rel="noopener">解析规则</a></p>
+<p>因为 js 脚本一般是内嵌在 HTML 页面中的，所以 javascript 的解析容易与 HTML 解析搞混了。Javascript 的解析需要注意的点有下面两点：</p>
+<h3 id="script-标签的解析"><a href="#script-标签的解析" class="headerlink" title="script 标签的解析"></a>script 标签的解析</h3><p>在之前，我们提到过 HTML 中的 5 类元素，其中 <strong>script</strong> 标签属于 <strong>原始文本数据</strong>,。它有个特别的解析属性就是虽然内嵌在了 HTML 界面的数据状态，但是仍然不能解析字符引用。看看下面这个例子：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">"en"</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">"UTF-8"</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"viewport"</span> <span class="hljs-attr">content</span>=<span class="hljs-string">"width=device-width, initial-scale=1.0"</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">http-equiv</span>=<span class="hljs-string">"X-UA-Compatible"</span> <span class="hljs-attr">content</span>=<span class="hljs-string">"ie=edge"</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>Document<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="handlebars"><span class="xml"><span class="hljs-symbol">&amp;lt;</span></span></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br>    <span class="hljs-symbol">&amp;lt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p><img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/xss_payload_new/xss_5.png"  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="    alt="xss_5"></p>
+<p>可以看到，里面的字符引用并没有被解码。</p>
+<h3 id="unicode-字符编码的解析"><a href="#unicode-字符编码的解析" class="headerlink" title="unicode 字符编码的解析"></a>unicode 字符编码的解析</h3><p>在之前的基础铺垫的时候提到了 js 中 unicode 的编码问题，那么它们在脚本的什么位置会被解析？又会被解析成什么意思？unicode 大致有以下三个位置会被解析，但是解析的意义有些许不同。</p>
+<h4 id="1、字符串中"><a href="#1、字符串中" class="headerlink" title="1、字符串中"></a>1、字符串中</h4><p>unicode 放在字符串中的时候会被解析，但是只是会解析为常规的字符，不会解释为破坏上下文的特殊意义的字符。请看下例子：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript"><br>      <span class="hljs-keyword">var</span> str = <span class="hljs-string">'\u0027'</span>;<br>      <span class="hljs-built_in">document</span>.write(str);<br></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p><img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/xss_payload_new/xss_6.png"  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="    alt="xss_6"></p>
+<p>可以看到，被编码的单引号只是解释为了单纯的字符，没有破坏 js 的上下文。</p>
+<h4 id="2、标识符中"><a href="#2、标识符中" class="headerlink" title="2、标识符中"></a>2、标识符中</h4><p>标识符包括函数名，属性名等。如果使用 unicode 编码这些数据的话，会被正确解释为上下文中的标识符，可以正确的运行。看下面这个例子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs javascript">&lt;script&gt;\u0064\u006f\u0063\u0075\u006d\u0065\u006e\u0074.\u0077\u0072\u0069\u0074\u0065(<span class="hljs-string">'test_successfully@'</span>);<span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br></code></pre></td></tr></table></figure>
+
+<p>注意这里只编码了 <strong>document</strong> 和 <strong>write</strong>，并没有编码点号，因为测试结果显示无法编码点号进行执行，但这并不影响我们探测，因为一般利用到的函数都等都只是单纯的字母拼接。</p>
+<p><img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/xss_payload_new/xss_7.png"  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="    alt="xss_7"></p>
+<p>成功解码并执行了打印函数。</p>
+<h4 id="３、控制字符"><a href="#３、控制字符" class="headerlink" title="３、控制字符"></a>３、控制字符</h4><p>当控制字符不在引号包围的时候，例如 <code>(</code> <code>)</code> <code>&#39;</code> <code>&quot;</code>这些字符，裸露在文档外面进行 unicode 编码，js 解析器不能将它们正确的解析为控制字符，仅仅会被解码为标识符亦或是字符串，所以，想要成功执行一个 js 函数，就必须保证括号为 <strong>()</strong>，而不是 <strong>\u0028 \u0029</strong>.</p>
+<p>综上，js 在解析 unicode 编码的时候，能赋予非字符意义的地方有且仅有<strong>标识符</strong>这一个位置。</p>
+<h1 id="4-解析流的顺序"><a href="#4-解析流的顺序" class="headerlink" title="4@ 解析流的顺序"></a>4@ 解析流的顺序</h1><p>前端这三大解析器一般是相互配合的，我们需要搞清楚他们配合的顺序，然后对应构造 payload ，才有可能正确的被解码执行。</p>
+<p>一般的解析顺序如下：</p>
+<p><strong>1、HTML 解析</strong></p>
+<p>浏览器从网络堆栈中获取内容后，会触发 HTML 解析器根据解析规则（上文链接）对文章进行词法的解析，在这一步中，所有的<strong>合理的字符引用都会被解码</strong>【合理即能够被解析的位置放入字符引用】，解析完成后 DOM 树就被创建好了。</p>
+<p><strong>2、JS or URL 解析</strong></p>
+<p>为什么第二步的解析顺序不确定呢，这与文档资源类型的顺序有关。其中 Js 解析器 负责文档中内嵌脚本，unicode 编码等的解析，URL 解析器负责解析碰到的 URL 资源的解码。但位置不同，可能会造成不同的解析顺序。试看下两例：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs javascript">脚本1：<br> &lt;a href="javascript:%61%6c%65%72%74%28%31%29"&gt;sequence_test&lt;/a&gt; 编码了 alert(1)<br> <br>脚本2：<br>&lt;a href=# onclick="window.\u006f\u0070\u0065\u006e('http://www.baidu.com')"&gt;sequence_test&lt;/a&gt;   <br>    编码了open<br></code></pre></td></tr></table></figure>
+
+<p>其中</p>
+<p>脚本1先是由 url 解析器解析 href 中的资源，解析完成后进入 js 的上下文，所以 js 解析器再解析 js 的内容。</p>
+<p>脚本2先是由 js 解析器解析 onclick 中的 unicode 编码，编码完成后发现参数是 url 的上下文，这时 url 解析器介入解析。</p>
+<p>可以看到，不同的位置会导致不同的解析顺序。</p>
+<h1 id="5-xss-payload-的练习"><a href="#5-xss-payload-的练习" class="headerlink" title="5@ xss_payload 的练习"></a>5@ xss_payload 的练习</h1><p>下面给出了常见的几种弹窗的方法，通过上面的阅读与学习，来判断下是否可以成功执行代码。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs javascript">1、  &lt;a href="%6a%61%76%61%73%63%72%69%70%74:%61%6c%65%72%74%28%31%29"&gt;&lt;/a&gt;    <br>    url编码了 javascript:alert(1)<br> <br>2、  &lt;a href="&amp;#x6a;&amp;#x61;&amp;#x76;&amp;#x61;&amp;#x73;&amp;#x63;&amp;#x72;&amp;#x69;&amp;#x70;&amp;#x74;:%61%6c%65%72%74%28%32%29"&gt;xss_test&lt;/a&gt;   <br>	字符实体编码了 javascript url 编码了 alert(2)    <br><br>3、  &lt;a href="javascript%3aalert(3)"&gt;test&lt;/a&gt;<br>    url 编码了 ：<br><br>4、  &lt;div&gt;&amp;#60;img src=x onerror=alert(4)&amp;#62;&lt;/div&gt;  <br>    字符实体编码了尖括号<br><br>5、  &lt;textarea&gt;&amp;#60;script&amp;#62;alert(5)&amp;#60;/script&amp;#62;&lt;/textarea&gt; <br>	字符实体编码了尖括号<br></code></pre></td></tr></table></figure>
+
+<h3 id="解析"><a href="#解析" class="headerlink" title="解析"></a>解析</h3><p>1、 无法执行，因为编码了协议</p>
+<p>2、 可以执行，html 先解析字符实体编码 javascript ，url 解析器再解析 alert(2)，位置与格式都允许。</p>
+<p>3、 无法执行，因为协议被编码导致无法正确识别协议。</p>
+<p>4、 无法执行，因为嵌在数据状态内，只能解析字符引用为普通字符串，无特殊意义。</p>
+<p>5、无法执行，首先是因为在数据状态中只能将尖括号转义为字符串，其次 RCDATA 元素中不能嵌入新的标签，嵌入也无法执行代码。</p>
+<p>更多例子附带答案，<a href="http://test.attacker-domain.com/browserparsing/answers.txt" target="_blank" rel="noopener">戳这</a></p>
+<h1 id="6-关于-svg-标签中解析-js-代码"><a href="#6-关于-svg-标签中解析-js-代码" class="headerlink" title="6@ 关于 svg 标签中解析 js 代码"></a>6@ 关于 svg 标签中解析 js 代码</h1><p>上面写道 <strong>svg</strong> 标签属于外部元素，<strong>script</strong> 标签属于原是文本元素，而且也知道 <strong>script</strong> 标签里面是不能转义字符实体编码的，那么我们考虑一下下面这段代码是否可以弹窗：</p>
+<p><code>&lt;svg&gt;&lt;script&gt;alert&amp;#40;/xss/)&lt;/script&gt;&lt;/svg&gt;</code></p>
+<p>按我们上面理解的话，<code>&lt;script&gt;</code> 标签下不能解析字符引用，就算可以解析，圆括号这种被放在数据状态下的解码也只能成为字符串，并不能被解析为控制字符。</p>
+<p>所以不能码？上图～</p>
+<p><img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/xss_payload_new/xss_8.png"  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="    alt="xss_8"></p>
+<p><img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/xss_payload_new/xss_9.png"  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="    alt="xss_9"></p>
+<p>太夸张了，不仅解码了字符引用，还转换为了控制字符并且弹窗了～</p>
+<p>按照上面的分析，问题绝对就在 <strong>svg</strong> 这个标签上面。</p>
+<p><code>&lt;svg&gt;</code>这个标签 使用 XML 格式定义图形，XML 会解析字符实体，而 w3c 上面给出的这段实例代码中也可以看出 xml 使用的端倪。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">svg</span> <span class="hljs-attr">xmlns</span>=<span class="hljs-string">"http://www.w3.org/2000/svg"</span> <span class="hljs-attr">version</span>=<span class="hljs-string">"1.1"</span> <span class="hljs-attr">height</span>=<span class="hljs-string">"190"</span>&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">polygon</span> <span class="hljs-attr">points</span>=<span class="hljs-string">"100,10 40,180 190,60 10,60 160,180"</span><br>  <span class="hljs-attr">style</span>=<span class="hljs-string">"fill:lime;stroke:purple;stroke-width:5;fill-rule:evenodd;"</span> /&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">svg</span>&gt;</span><br><br><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>那么为什么 <strong>script</strong> 标签可以被解析呢？原因就是 <strong>svg</strong> 标签支持 嵌入 <strong>script</strong> 标签。</p>
+<p>这是支持 <strong>script</strong> 标签的<a href="https://www.w3.org/TR/SVG11/script.html" target="_blank" rel="noopener">文档</a>借用引用文章作者的话来讲就是：</p>
+<p>这个 payload 之所以可以执行是因为遵循了 <strong>svg</strong> 和 <strong>xml</strong> 的标准。</p>
+<h1 id="7-总结"><a href="#7-总结" class="headerlink" title="7@ 总结"></a>7@ 总结</h1><p>理解一个漏洞的利用，需要也有必要挖的深些，这样才能更好的从攻与防的角度来构造攻击向量，亦或是根据攻击的思路来构造防御的 waf。</p>
+<p><code>Reference</code>:</p>
+<p><code>https://www.cnblogs.com/polk6/p/html-entity.html</code></p>
+<p><code>https://www.cnblogs.com/liuxianan/p/display-unicode-character-in-html-css-and-js.html</code></p>
+<p><code>https://zhidao.baidu.com/question/583316301.html</code></p>
+<p><code>https://bbs.csdn.net/topics/392055451</code></p>
+<p><code>http://test.attacker-domain.com/browserparsing/answers.txt</code></p>
+<p><code>http://test.attacker-domain.com/browserparsing/tests.html</code></p>
+<p><code>http://bobao.360.cn/learning/detail/292.html</code></p>
+<p><code>https://www.hackersb.cn/hacker/85.html</code></p>
+<p><code>http://www.w3school.com.cn/html5/html_5_svg.asp</code></p>
+<p><code>https://www.w3.org/TR/SVG11/script.html</code></p>
+
+    </section>
+    <section class="extra">
+      
+        <section class="donate">
+  <div class="qrcode">
+    <img      class="lazyload" data-original="/image/95.jpg"  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  class="lazyload" data-original="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="    >
+  </div>
+  <div class="icon">
+    <a href="javascript:;" id="alipay"><i class="iconfont iconalipay"></i></a>
+    <a href="javascript:;" id="wechat"><i class="iconfont iconwechat-fill"></i></a>
+  </div>
+</section>
+      
+      
+  <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/">javascript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/tips/">tips</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/xss/">xss</a></li></ul>
+
+      
+<nav class="nav">
+  
+    <a href="/2019/09/18/deepin下多版本php的配置/"><i class="iconfont iconleft"></i>deepin 上多版本 php 版本的配置</a>
+  
+  
+    <a href="/2019/09/09/深入理解 javascript 原型链污染/">JS 原型链污染<i class="iconfont iconright"></i></a>
+  
+</nav>
+
+    </section>
+    
+  </section>
+</article>
+  </div>
+</main>
+  <footer class="footer">
+  <div class="footer-social">
+    
+    
+    
+    
+    
+    <a href="https://weibo.com/u/6479214985 " target="_blank" onMouseOver="this.style.color= '#09BB07'"
+      onMouseOut="this.style.color='#33333D'">
+      <i class="iconfont footer-social-item  iconweibo "></i>
+    </a>
+    
+    
+    
+    
+    
+    <a href="https://twitter.com/rt9518 " target="_blank" onMouseOver="this.style.color= '#DA2E76'"
+      onMouseOut="this.style.color='#33333D'">
+      <i class="iconfont footer-social-item  twitter "></i>
+    </a>
+    
+    
+    
+    
+    
+    <a href="https://github.com/59lx " target="_blank" onMouseOver="this.style.color= '#24292E'"
+      onMouseOut="this.style.color='#33333D'">
+      <i class="iconfont footer-social-item  icongithub-fill "></i>
+    </a>
+    
+  </div>
+  <div class="footer-copyright"><p>Copyright© 2019-2020 | <a target="_blank" href="https://www.izhaoo.com">zhaoo</a> .AllRightsReserved</p></div>
+</footer>
+    <div class="fab fab-plus">
+    <i class="iconfont iconplus"></i>
+  </div>
+  <div class="fab fab-up">
+    <i class="iconfont iconcaret-up"></i>
+  </div>
+  <div class="fab fab-menu">
+    <i class="iconfont iconmenu"></i>
+  </div>
+</body>
+
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+
+
+
+
+<script src="https://cdn.bootcss.com/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+
+
+
+
+
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
+
+
+
+
+<script src="https://cdn.bootcdn.net/ajax/libs/justifiedGallery/3.7.0/js/jquery.justifiedGallery.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+<link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap-grid.css" rel="stylesheet">
+
+</html>
