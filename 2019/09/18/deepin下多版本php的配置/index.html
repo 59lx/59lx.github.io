@@ -1,0 +1,397 @@
+
+
+<!DOCTYPE html>
+<html lang="en" color-mode=light>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>deepin 上多版本 php 版本的配置 - 你好我是王日天@</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="google" content="notranslate" />
+  
+  <meta name="description" content="1@ 前言之前博客上的一篇文章，稍有改动。
+2@ 过程...">
+  <meta name="author" content="rt95">
+  <link rel="icon" href="/images/favicon.ico" type="image/png" sizes="16x16">
+  <link rel="icon" href="/images/icons/favicon-32x32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png" sizes="180x180">
+  <meta rel="mask-icon" href="/images/icons/stun-logo.svg" color="#333333">
+  
+    <meta rel="msapplication-TileImage" content="/images/icons/favicon-144x144.png">
+    <meta rel="msapplication-TileColor" content="#000000">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+    
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1445822_s6x2xcokxrl.css">
+
+  
+
+  
+    
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
+
+  
+
+  
+    
+      
+        
+        
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/xcode.min.css" name="highlight-style" mode="light">
+
+      
+        
+        
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/solarized-dark.min.css" name="highlight-style" mode="dark">
+
+      
+  
+
+  <script>
+    var CONFIG = window.CONFIG || {};
+    var ZHAOO = window.ZHAOO || {};
+    CONFIG = {
+      isHome: false,
+      fancybox: true,
+      pjax: false,
+      lazyload: {
+        enable: true,
+        only_post: 'false',
+        loading: '/images/loading.gif'
+      },
+      donate: {
+        enable: true,
+        alipay: '/image/95.jpg',
+        wechat: '/image/95.jpg'
+      },
+      galleries: {
+        enable: true
+      },
+      fab: {
+        enable: true,
+        always_show: false
+      },
+      carrier: {
+        enable: true
+      },
+      daovoice: {
+        enable: false
+      },
+      preview: {
+        background: {
+          default: '/images/welcome-image.jpg',
+          api: ''
+        },
+        motto: {
+          default: '我在开了灯的床头下，想问问自己的心啊。',
+          api: 'https://v2.jinrishici.com/one.json',
+          data_contents: '["data","content"]'
+        },
+      },
+      qrcode: {
+        enable: true,
+        type: 'url',
+        image: 'https://pic.izhaoo.com/weapp-code.jpg',
+      },
+      toc: {
+        enable: true
+      },
+      scrollbar: {
+        model: 'simple'
+      },
+      notification: {
+        enable: false,
+        delay: 4500,
+        list: '',
+        page_white_list: '',
+        page_black_list: ''
+      }
+    }
+  </script>
+
+  
+
+  
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body class="lock-screen">
+  <div class="loading"></div>
+  
+
+
+  <nav class="navbar">
+    <div class="left">
+      
+        <i class="iconfont iconqrcode j-navbar-qrcode"></i>
+      
+      
+        <i class="iconfont iconmoono" id="color-toggle" color-toggle="light"></i>
+      
+    </div>
+    <div class="center">deepin 上多版本 php 版本的配置</div>
+    <div class="right">
+      <i class="iconfont iconmenu j-navbar-menu"></i>
+    </div>
+    
+      <div id="qrcode-navbar"></div>
+    
+  </nav>
+
+  
+
+<nav class="menu">
+  <div class="menu-wrap">
+    <div class="menu-close">
+      <i class="iconfont iconbaseline-close-px"></i>
+    </div>
+    <ul class="menu-content"><li class="menu-item">
+        <a href="/ " class="underline "> 首页</a>
+      </li><li class="menu-item">
+        <a href="/archives " class="underline "> 归档</a>
+      </li><li class="menu-item">
+        <a href="/links " class="underline "> links</a>
+      </li><li class="menu-item">
+        <a href="/about " class="underline "> 关于</a>
+      </li></ul>
+    
+      <div class="menu-copyright"><p>Powered by <a target="_blank" href="https://hexo.io">Hexo</a>  |  Theme - <a target="_blank" href="https://github.com/izhaoo/hexo-theme-zhaoo">zhaoo</a></p></div>
+    
+  </div>
+</nav>
+  <main id="main">
+  <div class="article-wrap">
+    <div class="row container">
+      <div class="col-xl-3"></div>
+      <div class="col-xl-6"><article class="article">
+  <div class="wrap">
+    <section class="head">
+  <img   class="lazyload" data-original="/images/post-image.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
+  <div class="head-mask">
+    <h1 class="head-title">deepin 上多版本 php 版本的配置</h1>
+    <div class="head-info">
+      <span class="post-info-item"><i class="iconfont iconcalendar"></i>September 18, 2019</span>
+      
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>3417</span>
+    </div>
+  </div>
+</section>
+    <section class="main">
+      <section class="content">
+        <h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1@ 前言"></a>1@ 前言</h2><p>之前博客上的一篇文章，稍有改动。</p>
+<h2 id="2-过程"><a href="#2-过程" class="headerlink" title="2@ 过程"></a>2@ 过程</h2><h3 id="2-1-什么是ppa"><a href="#2-1-什么是ppa" class="headerlink" title="2.1 什么是ppa"></a>2.1 什么是ppa</h3><p>首先需要了解下<strong>ppa</strong>：</p>
+<p>大多数linux的软件管理包，如 centos 的 yum，debain 的 apt 一般都是不断更新自己软件库里面的一些应用，所以我们默认下载到的应当是最新版本的软件，那么如果软件仓库里面的软件被撤下，我们又想下载老版本的时候，就会用到<strong>ppa</strong>这个东西</p>
+<p><strong>ppa</strong>（personal package archive），即个人包档案，里面可以有软件制作者发布的各个版本，一般来说是用来寻找最新版的软件，以防止上述的软件管理包未更新，此处我们用来下载旧包。</p>
+<p>由于deepin也是debain系列的系统，所以可以使用ubuntu的添加源的办法来添加ppa源。</p>
+<p>首先将源加进到本机的源文件中，然后导入公钥，更新源（如果有依赖需要下一下dirmngr）：</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli"><span class="hljs-keyword">echo</span> <span class="hljs-string">"deb http://ppa.launchpad.net/ondrej/php/ubuntu xenial main"</span> | tee -a <span class="hljs-string">/etc/apt/sources.list</span><br><br><span class="hljs-keyword">echo</span> <span class="hljs-string">"deb-src http://ppa.launchpad.net/ondrej/php/ubuntu xenial main"</span> | tee -a <span class="hljs-string">/etc/apt/sources.list</span><br><br>apt-key adv <span class="hljs-params">--keyserver</span> keyserver.ubuntu.com <span class="hljs-params">--recv-keys</span> E5267A6C<br></code></pre></td></tr></table></figure>
+
+<p>添加源如果有问题，加上这句：</p>
+<figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs maxima">sudo apt-<span class="hljs-built_in">get</span> install <span class="hljs-literal">unknown</span>-horizons<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-2-下载php多版本"><a href="#2-2-下载php多版本" class="headerlink" title="2.2 下载php多版本"></a>2.2 下载php多版本</h3><p>网上发现了一个不错的文章，里面刚好讲到ubuntu中多版本php的安装，deepin上安装过程大同小异。</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs angelscript">sudo apt-<span class="hljs-keyword">get</span> install -y php5<span class="hljs-number">.6</span>-common php5<span class="hljs-number">.6</span>-mbstring php5<span class="hljs-number">.6</span>-mcrypt php5<span class="hljs-number">.6</span>-mysql php5<span class="hljs-number">.6</span>-xml php5<span class="hljs-number">.6</span>-gd php5<span class="hljs-number">.6</span>-curl php5<span class="hljs-number">.6</span>-json php5<span class="hljs-number">.6</span>-fpm php5<span class="hljs-number">.6</span>-zip php5<span class="hljs-number">.6</span>-mcrypt libapache2-mod-php5<span class="hljs-number">.6</span><br><br>sudo apt-<span class="hljs-keyword">get</span> install -y php7<span class="hljs-number">.0</span>-common php7<span class="hljs-number">.0</span>-mbstring php7<span class="hljs-number">.0</span>-mcrypt php7<span class="hljs-number">.0</span>-mysql php7<span class="hljs-number">.0</span>-xml php7<span class="hljs-number">.0</span>-gd php7<span class="hljs-number">.0</span>-curl php7<span class="hljs-number">.0</span>-json php7<span class="hljs-number">.0</span>-fpm php7<span class="hljs-number">.0</span>-zip php7<span class="hljs-number">.0</span>-mcrypt libapache2-mod-php7<span class="hljs-number">.0</span><br><br>sudo apt-<span class="hljs-keyword">get</span> install -y php7<span class="hljs-number">.1</span>-common php7<span class="hljs-number">.1</span>-mbstring php7<span class="hljs-number">.1</span>-mcrypt php7<span class="hljs-number">.1</span>-mysql php7<span class="hljs-number">.1</span>-xml php7<span class="hljs-number">.1</span>-gd php7<span class="hljs-number">.1</span>-curl php7<span class="hljs-number">.1</span>-json php7<span class="hljs-number">.1</span>-fpm php7<span class="hljs-number">.1</span>-zip php7<span class="hljs-number">.1</span>-mcrypt libapache2-mod-php7<span class="hljs-number">.1</span><br></code></pre></td></tr></table></figure>
+
+<p>上述安装了三个版本，分别是<strong>5.6 7.0 7.1</strong></p>
+<p>下面使用<strong>a2enmod a2dismod</strong>命令来开启或禁用系统的某个模块来完成php版本的快速切换。</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-attribute">sudo</span> a2enmod rewrite <span class="hljs-comment">#开启重写转向</span><br>sudo a2enmod headers<br></code></pre></td></tr></table></figure>
+
+<p>然后在你的shell配置文件 <strong>~./bashrc 或者 ~/.zshrc</strong> 中添加别名来达到快速切换的目的，原理就是禁用其他php模块，激活要使用的php版本</p>
+<figure class="highlight smali"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs smali">alias php56='sudo a2dismod php7.0 &amp;&amp; sudo a2dismod php7.1 &amp;&amp; sudo a2enmod php5.6 &amp;&amp; sudo service apache2 restart'<br>alias php70='sudo a2dismod php5.6 &amp;&amp; sudo a2dismod php7.1 &amp;&amp; sudo a2enmod php7.0 &amp;&amp; sudo service apache2 restart'<br>alias php71='sudo a2dismod php5.6 &amp;&amp; sudo a2dismod php7.0 &amp;&amp; sudo a2enmod php7.1 &amp;&amp; sudo service apache2 restart'<br></code></pre></td></tr></table></figure>
+
+<p>然后 <code>source ~/.zshrc 或者 /.bashrc</code></p>
+<p><img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/DEEPIN/%E6%B7%B1%E5%BA%A6%E6%88%AA%E5%9B%BE_%E9%80%89%E6%8B%A9%E5%8C%BA%E5%9F%9F_20190522162731.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="   ><span class="image-caption">img</span></p>
+<p>检查版本，默认只显示最高版本，使用上述别名会成功切换php的版本，只不过不会显示在此处。</p>
+<h3 id="2-3-vscode-xdebug"><a href="#2-3-vscode-xdebug" class="headerlink" title="2.3 vscode + xdebug"></a>2.3 vscode + xdebug</h3><p>下个vscode就感觉它的调试十分简便，下面我们来配置下xdebug的断点调试，这里与普通安装php可能有些不同，需注意。</p>
+<p>首先，到 xdebug 官网查找对比对应的php版本下的xdebug版本。使用刚刚的别名，切换下不同状态下的php版本，写个 phpinfo() 的脚本来输出到 <code>https://xdebug.org/wizard.php</code>,点击 analyse 来分析下应当下载的xdebug版本，这里我直接贴上我的测试结果</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs angelscript"><span class="hljs-number">5.6</span> ---&gt;<span class="hljs-number">20131226</span><br><span class="hljs-number">7.0</span> ---&gt;<span class="hljs-number">20151012</span><br><span class="hljs-number">7.1</span> ---&gt;<span class="hljs-number">20160303</span><br></code></pre></td></tr></table></figure>
+
+<p>其实这个强大的网站会自动定位 phpinfo 信息中的配置文件的位置，然后有具体的操作步骤,而生成不同版本对应的 xdebug，下载安装包即可，可以利用 phpize 这个工具来生成对应版本的 xdebug 文件，如果没有可以下载对应版本的扩展：</p>
+<p><code>sudo apt-get install php5-dev</code></p>
+<p><strong>建议扩展从低版本开始下载，因为高版本扩展会优先被识别。</strong>接下来的操作分别是：</p>
+<ul>
+<li>./configure</li>
+<li>make</li>
+<li>make install</li>
+</ul>
+<p>然后将对应生成的 xdebug 文件配置信息放到对应 php.ini 文件中：</p>
+<p>【这里以5.6 版本为例，其他版本的配置同理，位置 /etc/php/5.6/apache2/php.ini】</p>
+<p>将下面这段配置加入到该配置文件中</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">zend_extension</span>=<span class="hljs-string">"/usr/lib/php/20131226/xdebug.so"</span>      <span class="hljs-comment">#之后配置其他版本php的时候只需将这个文件的位置换成上面我贴出的对应文件即可                                                                                                                      </span><br><br><span class="hljs-attr">xdebug.remote_enable</span> = <span class="hljs-number">1</span><br><br><span class="hljs-attr">xdebug.remote_handler</span> = dbgp<br><br><span class="hljs-attr">xdebug.remote_mode</span> = req <br><br><span class="hljs-attr">xdebug.remote_host</span> = <span class="hljs-number">127.0</span>.<span class="hljs-number">0.1</span><br><br><span class="hljs-attr">xdebug.remote_port</span> = <span class="hljs-number">9002</span><br><br><span class="hljs-attr">xdebug.remote_enable</span> = <span class="hljs-number">1</span><br><br><span class="hljs-attr">xdebug.remote_autostart</span> = <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>然后保存，在对应版本的php-ini中末尾填上<code>[xdebug]</code> 来激活xdebug扩展。</p>
+<p>最后重启，php56,来检查下是否配置成功。</p>
+<p><img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/DEEPIN/%E6%B7%B1%E5%BA%A6%E6%88%AA%E5%9B%BE_%E9%80%89%E6%8B%A9%E5%8C%BA%E5%9F%9F_20190522164713.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="   ><span class="image-caption">img</span></p>
+<p>配置成功！愉快的去审计叭～</p>
+<h2 id="3-总结"><a href="#3-总结" class="headerlink" title="3 @ 总结"></a>3 @ 总结</h2><p>推荐下黄老板和比伯的新歌 <strong>&lt;I Don’t care&gt;</strong>，已经被洗脑了。真好～</p>
+<p>Reference：</p>
+<p><code>https://www.jianshu.com/p/dedd2818c7f9</code></p>
+<p><code>https://zhidao.baidu.com/question/1670867120091087107.html</code></p>
+<p><code>https://blog.csdn.net/zhousmq/article/details/77765451</code></p>
+<p><code>https://www.cnblogs.com/wangshuyi/p/8512036.html</code></p>
+
+      </section>
+      <section class="extra">
+        
+          <ul class="copyright">
+  
+    <li><strong>本文作者：</strong>rt95</li>
+    <li><strong>本文链接：</strong><a href="http://59lx.github.io/2019/09/18/deepin%E4%B8%8B%E5%A4%9A%E7%89%88%E6%9C%ACphp%E7%9A%84%E9%85%8D%E7%BD%AE/index.html" title="http:&#x2F;&#x2F;59lx.github.io&#x2F;2019&#x2F;09&#x2F;18&#x2F;deepin%E4%B8%8B%E5%A4%9A%E7%89%88%E6%9C%ACphp%E7%9A%84%E9%85%8D%E7%BD%AE&#x2F;index.html">http:&#x2F;&#x2F;59lx.github.io&#x2F;2019&#x2F;09&#x2F;18&#x2F;deepin%E4%B8%8B%E5%A4%9A%E7%89%88%E6%9C%ACphp%E7%9A%84%E9%85%8D%E7%BD%AE&#x2F;index.html</a></li>
+    <li><strong>版权声明：</strong>本博客所有文章均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" title="BY-NC-SA" target="_blank" rel="noopener">BY-NC-SA</a> 许可协议，转载请注明出处！</li>
+  
+</ul>
+        
+        
+          <section class="donate">
+  <div id="qrcode-donate">
+    <img   class="lazyload" data-original="/image/95.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" >
+  </div>
+  <div class="icon">
+    <a href="javascript:;" id="alipay"><i class="iconfont iconalipay"></i></a>
+    <a href="javascript:;" id="wechat"><i class="iconfont iconwechat-fill"></i></a>
+  </div>
+</section>
+        
+        
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/deepin/" rel="tag">deepin</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%8E%AF%E5%A2%83/" rel="tag">环境</a></li></ul> 
+
+        
+  <nav class="nav">
+    <a href="/2019/10/06/YouDiancms%E5%AE%A1%E8%AE%A1%E5%B0%8F%E7%BB%93/"><i class="iconfont iconleft"></i>某企业管理系统审计小结</a>
+    <a href="/2019/09/17/Xss%E6%94%BB%E5%87%BB%E5%90%91%E9%87%8F%E8%A7%A3%E6%9E%90%E7%9A%84%E6%8E%A2%E6%9E%90/">Xss 攻击向量解析的探析<i class="iconfont iconright"></i></a>
+  </nav>
+
+      </section>
+      
+    </section>
+  </div>
+</article></div>
+      <div class="col-xl-3">
+        
+          
+  <aside class="toc-wrap">
+    <h3 class="toc-title">文章目录：</h3>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-前言"><span class="toc-text">1@ 前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-过程"><span class="toc-text">2@ 过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-什么是ppa"><span class="toc-text">2.1 什么是ppa</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-下载php多版本"><span class="toc-text">2.2 下载php多版本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-vscode-xdebug"><span class="toc-text">2.3 vscode + xdebug</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-总结"><span class="toc-text">3 @ 总结</span></a></li></ol>
+  </aside>
+
+        
+      </div>
+    </div>
+  </div>
+</main>
+  
+
+<footer class="footer">
+  <div class="footer-social"><a 
+        href="https://weibo.com/u/6479214985 "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#09BB07'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconweibo "></i>
+      </a><a 
+        href="https://twitter.com/rt9518 "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#DA2E76'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  twitter "></i>
+      </a><a 
+        href="https://github.com/59lx "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#24292E'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  icongithub-fill "></i>
+      </a></div>
+  
+    <div class="footer-copyright"><p>Powered by <a target="_blank" href="https://hexo.io">Hexo</a>  |  Theme - <a target="_blank" href="https://github.com/izhaoo/hexo-theme-zhaoo">zhaoo</a></p></div>
+  
+</footer>
+  
+      <div class="fab fab-plus">
+    <i class="iconfont iconplus"></i>
+  </div>
+  
+  
+  <div class="fab fab-up">
+    <i class="iconfont iconcaret-up"></i>
+  </div>
+  
+  
+    <div class="scrollbar j-scrollbar">
+  <div class="scrollbar-current j-scrollbar-current"></div>
+</div>
+  
+  
+    
+<script src="/js/color-mode.js"></script>
+
+  
+</body>
+
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+
+
+
+  
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
+
+
+
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+
+
+
+
+
+  
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+
+
+
+
+<script src="/js/utils.js"></script>
+<script src="/js/script.js"></script>
+
+
+
+
+
+  <script>
+    (function () {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      } else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</html>

