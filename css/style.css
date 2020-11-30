@@ -60,7 +60,7 @@ body a {
   text-decoration: none;
 }
 body a:hover {
-  color: #ff3b00;
+  color: #20b2aa;
 }
 body a,
 body a:hover {
@@ -118,15 +118,15 @@ body span {
   display: none;
 }
 *::selection {
-  background: #ff3b00;
+  background: #20b2aa;
   color: #fff;
 }
 *::-moz-selection {
-  background: #ff3b00;
+  background: #20b2aa;
   color: #fff;
 }
 *::-webkit-selection {
-  background: #ff3b00;
+  background: #20b2aa;
   color: #fff;
 }
 .container {
@@ -845,7 +845,7 @@ body span {
   font-size: 1.5em;
 }
 .fab:hover {
-  background-color: #ff3b00;
+  background-color: #20b2aa;
   cursor: pointer;
 }
 .fab-hide {
@@ -1483,7 +1483,7 @@ body span {
   background-color: var(--color-background-secondary);
   padding: 2px 5px;
   border-radius: 2px;
-  color: #ff3b00;
+  color: #20b2aa;
 }
 .article .wrap .main .content a {
   text-decoration: underline;
@@ -1549,7 +1549,7 @@ body span {
   margin: 0 0 1em;
   padding: 15px 20px;
   background-color: var(--color-background-secondary);
-  border-left: 4px solid #ff3b00;
+  border-left: 4px solid #20b2aa;
 }
 .article .wrap .main .content blockquote p {
   margin: 0;
@@ -1558,7 +1558,7 @@ body span {
   margin-top: 50px;
 }
 .article .wrap .main .extra .copyright {
-  border-left: 4px solid #ff3b00;
+  border-left: 4px solid #20b2aa;
   background-color: var(--color-background-secondary);
   list-style: none;
   padding: 15px 20px;
@@ -1643,7 +1643,7 @@ body span {
 }
 .article .wrap .main .extra .tag-list .tag-list-item:hover {
   cursor: pointer;
-  background-color: #ff3b00;
+  background-color: #20b2aa;
 }
 .article .wrap .main .extra .tag-list .tag-list-item:hover a {
   color: #fff;
@@ -1666,7 +1666,7 @@ body span {
   text-align: center;
 }
 .article .wrap .main .comments .btn:hover {
-  background-color: #ff3b00;
+  background-color: #20b2aa;
   color: #fff;
   transition: all 0.3s cubic-bezier(0.25, 0.5, 0.5, 0.9);
   cursor: pointer;
@@ -1766,7 +1766,7 @@ body span {
   border-left: 3px solid transparent;
 }
 .toc-wrap .toc .toc-link.active {
-  color: #ff3b00;
+  color: #20b2aa;
   font-weight: bold;
 }
 .toc-wrap .toc .toc-child {
@@ -1876,7 +1876,7 @@ body span {
   margin-right: 10px;
 }
 .tags a:hover {
-  background-color: #ff3b00;
+  background-color: #20b2aa;
   color: #fff !important;
 }
 .galleries {
